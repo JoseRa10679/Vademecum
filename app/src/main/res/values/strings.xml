@@ -1,0 +1,47 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Vademecum</string>
+    <string name="ok">OK</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="p_activo">P. Activo</string>
+    <string name="acerca_de">Acerca de..</string>
+    <string name="versi_n">Versión</string>
+
+    <!-- Acerca de.. -->
+    <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la Agencia Española del Medicamento</string>
+    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\tHay que introducir tres letras para activar el botón de búsqueda</string>
+    <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto\n\t\tProblemas de suministro.</string>
+    <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
+    <!-- Fin Acerca de.. -->
+
+    <!-- Detalle Fármaco-->
+    <string name="principios_activos">Principios Activos</string>
+    <string name="laboratorio">Laboratorio</string>
+    <string name="farmaco">Fármaco</string>
+    <string name="nombre">Nombre</string>
+    <string name="prescripcion">Prescripcion</string>
+    <string name="conducci_n">Conducción</string>
+    <string name="presentaciones">Presentaciones:</string>
+    <string name="presentaciones2">Presentaciones</string>
+    <string name="ficha_tecnica">Ficha Tecnica completa</string>
+    <string name="prospecto">Prospecto</string>
+    <string name="problemas_de_suministro">Problemas de suministro</string>
+    <string name="puede_afectar_cond">Puede afectar a la conducción</string>
+    <string name="no_afecta_conduc">No afecta a la conducción</string>
+    <string name="hay_problemas_suminstro">HAY PROBLEMAS DE SUMINISTRO</string>
+    <string name="no_problemas_suministro" tools:ignore="Typos">No hay problemas de suministro en este momento</string>
+    <string name="regsitro">REGISTRO</string>
+    <string name="abrir_ficha_tecnica">Abrir Ficha Técnica completa…</string>
+    <string name="ft_no_accesible">Ficha Técnica no accesible</string>
+    <string name="abrir_prospecto">Abrir Prospecto…</string>
+    <string name="p_no_accesible">Prospecto no accesible</string>
+    <string name="base_url">https://cima.aemps.es/cima/rest/</string>
+    <string name="salir">Salir</string>
+    <string name="salir_aplicacion">No hay conexión an Internet.\nVa a salir de la aplicación.\n\nEl acceso a Intenet es necesario para conectar con la base de datos de la AEMS.</string>
+    <string name="no_conexion">NO HAY CONEXION A INTERNET</string>
+    <string name="princpios_activos">Principios Activos:</string>
+    <string name="excipientes">Excipientes:</string>
+    <string name="posolog_a">Posología</string>
+    <string name="contraindicaciones">Contraindicaciones</string>
+    <string name="reacciones_adversas">Reacciones Adversas</string>
+    <!-- Fin Detalle Fármaco-->
+</resources>

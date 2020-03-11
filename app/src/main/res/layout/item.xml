@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/diez_dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/itemFarmaco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/ocho_dp"
+            android:text="@string/farmaco"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/itemLaboratorio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/ocho_dp"
+            android:text="@string/laboratorio"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/doce_sp" />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

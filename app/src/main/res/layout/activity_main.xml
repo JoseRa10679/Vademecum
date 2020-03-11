@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="@dimen/cero_dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@mipmap/ic_launcher_foreground"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/colorAccent" />
+
+    <Button
+        android:id="@+id/botonBuscar"
+        android:layout_width="@dimen/cuarentaycinco_dp"
+        android:layout_height="@dimen/cuarentaycinco_dp"
+        android:enabled="false"
+        android:text="@string/ok"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtBuscar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtBuscar" />
+
+    <EditText
+        android:id="@+id/txtBuscar"
+        android:layout_width="@dimen/cero_dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/ocho_dp"
+        android:layout_marginEnd="@dimen/ocho_dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/botonBuscar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerId"
+        android:layout_width="@dimen/cero_dp"
+        android:layout_height="@dimen/cero_dp"
+        android:layout_marginStart="@dimen/ocho_dp"
+        android:layout_marginTop="@dimen/ocho_dp"
+        android:layout_marginEnd="@dimen/ocho_dp"
+        android:layout_marginBottom="@dimen/ocho_dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/ocho_dp"
+        android:layout_marginTop="@dimen/ocho_dp"
+        android:layout_marginEnd="@dimen/ocho_dp"
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtBuscar">
+
+        <CheckBox
+            android:id="@+id/chkPActivo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:orientation="horizontal"
+            android:padding="@dimen/ocho_dp"
+            android:text="@string/p_activo"
+            android:textAlignment="textStart"
+            android:textDirection="firstStrongLtr"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="307dp"
+            tools:layout_editor_absoluteY="101dp" />
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

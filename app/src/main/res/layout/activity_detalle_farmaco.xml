@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DetalleFarmaco">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarDetalle"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginStart="@dimen/cero_dp"
+        android:layout_marginLeft="@dimen/cero_dp"
+        android:layout_marginEnd="@dimen/cero_dp"
+        android:layout_marginRight="@dimen/cero_dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:visibility="visible"
+        app:navigationIcon="@mipmap/ic_launcher_foreground"
+        app:title="Detalle Fármaco"
+        app:titleTextColor="@color/colorAccent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/detalle_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/treintaydos_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:background="@drawable/back"
+                android:elevation="16dp"
+                android:fontFamily="@font/amarante"
+                android:paddingStart="8dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="16dp"
+                android:text="@string/nombre"
+                android:textColor="@color/colorTitulo"
+                android:textSize="@dimen/dieciseis_sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtLaboratorio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/laboratorio"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txtTituloPactivos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/princpios_activos"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txtPactivos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:background="@drawable/back"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/principios_activos"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txtTituloExcipientes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/excipientes"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txtExcipientes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:background="@drawable/back"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/excipientes"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/txtCpresc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/prescripcion"
+                android:textColor="@color/colorVerdeTexto"
+                android:textSize="@dimen/doce_sp" />
+
+            <TextView
+                android:id="@+id/txtConduccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/conducci_n"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/doce_sp" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/presentaciones"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/catorce_sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtPresentaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:background="@drawable/back"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/presentaciones2"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/doce_sp" />
+
+            <TextView
+                android:id="@+id/txtPsum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:layout_marginBottom="@dimen/ocho_dp"
+                android:paddingStart="@dimen/ocho_dp"
+                android:paddingEnd="@dimen/ocho_dp"
+                android:text="@string/problemas_de_suministro"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/doce_sp" />
+
+            <TextView
+                android:id="@+id/txtFichaT"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/ficha_tecnica"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/catorce_sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtFichaTPos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/posolog_a"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/catorce_sp" />
+
+            <TextView
+                android:id="@+id/txtFichaContra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/contraindicaciones"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/catorce_sp" />
+
+            <TextView
+                android:id="@+id/txtFichaReacciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/ocho_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/reacciones_adversas"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/catorce_sp" />
+
+            <TextView
+                android:id="@+id/txtProxpecto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ocho_dp"
+                android:layout_marginTop="@dimen/dieciseis_dp"
+                android:layout_marginEnd="@dimen/ocho_dp"
+                android:layout_marginBottom="@dimen/treintaydos_dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/prospecto"
+                android:textColor="@color/colorAzulTexto"
+                android:textSize="@dimen/catorce_sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>
