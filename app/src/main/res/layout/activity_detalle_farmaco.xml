@@ -211,7 +211,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:text="@string/posolog_a"
-                android:textColor="@color/colorAzulTexto"
+                android:textColor="@color/colorVerdeTexto"
                 android:textSize="@dimen/catorce_sp" />
 
             <TextView
@@ -224,7 +224,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:text="@string/contraindicaciones"
-                android:textColor="@color/colorAzulTexto"
+                android:textColor="@color/colorVerdeTexto"
                 android:textSize="@dimen/catorce_sp" />
 
             <TextView
@@ -237,7 +237,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:text="@string/reacciones_adversas"
-                android:textColor="@color/colorAzulTexto"
+                android:textColor="@color/colorVerdeTexto"
                 android:textSize="@dimen/catorce_sp" />
 
             <TextView

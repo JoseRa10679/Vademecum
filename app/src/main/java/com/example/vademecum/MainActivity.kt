@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -96,6 +97,10 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         inicializa()
 
         miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        Observer<String>{
+            miViewModel.textoEntrada.value = mEditText.toString()
+
+        }
 
         if(miViewModel.textoEntrada.value!=null){
             mEditText.setText(miViewModel.textoEntrada.value.toString())
@@ -160,7 +165,7 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
 
     override fun onResume() {
         super.onResume()
-        miViewModel.textoEntrada.value = mEditText.toString()
+
         if(mEditText.text.toString() !=""){
             if (chkActivo.isChecked) {
                 getPactivos(service)

@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.vademecum.Models.DetalleViewModel
 import com.example.vademecum.objetos.Docs
@@ -60,10 +61,21 @@ class DetalleFarmaco : AppCompatActivity() {
 
         miViewModel = ViewModelProvider(this).get(DetalleViewModel::class.java)
 
-        inicializaViewModels()
-
-
-
+        Observer<String>{
+            nombre.text = miViewModel.nombreV.value
+            laboratorio.text = miViewModel.laboratorioV.value
+            pactivos.text = miViewModel.pactivosV.value
+            cpresc.text = miViewModel.cprescV.value
+            conduccion.text = miViewModel.conduccionV.value
+            miPsum.text = miViewModel.miPsumV.value
+            presentaciones.text = miViewModel.presentacionesV.value
+            excipiente.text = miViewModel.excipienteV.value
+            fichaTecnica.text = miViewModel.fichaTecnicaV.value
+            fichaTecnicaPos.text = miViewModel.fichaTecnicaPosV.value
+            fichaTecnicaCont.text = miViewModel.fichaTecnicaContV.value
+            fichaTecnicaReac.text = miViewModel.fichaTecnicaReacV.value
+            miProspecto.text = miViewModel.miProspectoV.value
+        }
 
         val nRegistro = intent.getStringExtra(getString(R.string.regsitro))
 
@@ -82,41 +94,6 @@ class DetalleFarmaco : AppCompatActivity() {
 
     }
 
-    private fun inicializaViewModels() {
-        nombre.text = miViewModel.nombreV.value
-        laboratorio.text = miViewModel.laboratorioV.value
-        pactivos.text = miViewModel.pactivosV.value
-        cpresc.text = miViewModel.cprescV.value
-        conduccion.text = miViewModel.conduccionV.value
-        miPsum.text = miViewModel.miPsumV.value
-        presentaciones.text = miViewModel.presentacionesV.value
-        excipiente.text = miViewModel.excipienteV.value
-        fichaTecnica.text = miViewModel.fichaTecnicaV.value
-        fichaTecnicaPos.text = miViewModel.fichaTecnicaPosV.value
-        fichaTecnicaCont.text = miViewModel.fichaTecnicaContV.value
-        fichaTecnicaReac.text = miViewModel.fichaTecnicaReacV.value
-        miProspecto.text = miViewModel.miProspectoV.value
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        miViewModel.nombreV.value = nombre.toString()
-        miViewModel.laboratorioV.value = laboratorio.toString()
-        miViewModel.pactivosV.value = pactivos.toString()
-        miViewModel.cprescV.value = cpresc.toString()
-        miViewModel.conduccionV.value = conduccion.toString()
-        miViewModel.miPsumV.value = miPsum.toString()
-        miViewModel.presentacionesV.value =presentaciones.toString()
-        miViewModel.excipienteV.value = excipiente.toString()
-        miViewModel.fichaTecnicaV.value = fichaTecnica.toString()
-        miViewModel.fichaTecnicaPosV.value = fichaTecnicaPos.toString()
-        miViewModel.fichaTecnicaContV.value = fichaTecnicaCont.toString()
-        miViewModel.fichaTecnicaReacV.value = fichaTecnicaReac.toString()
-
-        miViewModel.miProspectoV.value=miProspecto.toString()
-
-    }
 
     /**
      * Nos da un fármaco con el número de registro
