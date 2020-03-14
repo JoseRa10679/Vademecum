@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.vademecum.objetos.MiObjeto
 
 class MainViewModel: ViewModel() {
-    val miRecycle:MutableLiveData<MiObjeto>? = MutableLiveData<MiObjeto>()
-    val textoEntrada = MutableLiveData<String>()
+    val miRecycle: MutableLiveData<MiObjeto>? by lazy {
+        MutableLiveData<MiObjeto>()
+    }
 }

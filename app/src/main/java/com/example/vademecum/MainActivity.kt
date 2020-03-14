@@ -1,11 +1,9 @@
 package com.example.vademecum
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -20,15 +18,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.Models.MainViewModel
-import com.example.vademecum.objetos.Adaptador
-import com.example.vademecum.objetos.MiFarmaco
-import com.example.vademecum.objetos.MiObjeto
-import com.example.vademecum.objetos.OnFarItemClickListner
+import com.example.vademecum.objetos.*
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,12 +36,13 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
    private lateinit var mButton: Button
    private lateinit var mEditText: EditText
    private lateinit var chkActivo: CheckBox
+   private lateinit var service: ApiService
 
-    private lateinit var service: ApiService
+   private lateinit var miViewModel: MainViewModel
 
-    lateinit var miViewModel: MainViewModel
+   private lateinit var recyclerFarmacos: RecyclerView
 
-    private lateinit var recyclerFarmacos: RecyclerView
+
     //</editor-folder>
 
     //<editor-folder desc = " Menu ">
@@ -97,19 +92,8 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         inicializa()
 
         miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        Observer<String>{
-            miViewModel.textoEntrada.value = mEditText.toString()
 
-        }
-
-        if(miViewModel.textoEntrada.value!=null){
-            mEditText.setText(miViewModel.textoEntrada.value.toString())
-        }else{
-            mEditText.setText("")
-        }
-
-
-        if(!hasNetworkAvailable(this)){
+        if(!Comun.hasNetworkAvailable(this)){
 
             val builder = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.salir))
@@ -131,14 +115,8 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
 
         // Se activa el botón cuando el número de letras es mayor a 2
         mEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                //
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                //
-            }
-
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 mButton.isEnabled = mEditText.text.length>2
             }
@@ -154,11 +132,20 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         }
 
         mButton.setOnClickListener{
-            if(chkActivo.isChecked ){
-                getPactivos(service)
+            if(Comun.hasNetworkAvailable(this)) {
+                if(chkActivo.isChecked ){
+                    getPactivos(service)
+                }else{
+                    getMedicamentos(service)
+                }
             }else{
-                getMedicamentos(service)
+                val builder = AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.salir))
+                    .setMessage(getString(R.string.salir_aplicacion))
+                    .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
+                builder.create().show()
             }
+
         }
 
     }
@@ -167,25 +154,12 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         super.onResume()
 
         if(mEditText.text.toString() !=""){
-            if (chkActivo.isChecked) {
-                getPactivos(service)
-            } else {
-                getMedicamentos(service)
-            }
+            getComun(miViewModel.miRecycle?.value)
+        }else{
+            getComun(null)
         }
         mEditText.requestFocus()
         UIUtil.showKeyboard(this, mEditText)
-    }
-
-    /**
-     *  Comprueba si Internet está accesible
-     */
-    @Suppress("DEPRECATION")
-    private fun hasNetworkAvailable(context: Context): Boolean {
-        val service: String = Context.CONNECTIVITY_SERVICE
-        val manager: ConnectivityManager? = context.getSystemService(service) as ConnectivityManager?
-        val network = manager?.activeNetworkInfo
-        return (network != null)
     }
 
     private fun inicializa(){
@@ -202,7 +176,7 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
     //<editor-folder desc = " Consultas ">
 
     private fun getPactivos(ser: ApiService){
-        val miS: String = mEditText.text.toString() + "*"
+        val miS = mEditText.text.toString() + "*"
         ser.getPActivos(miS, 1).enqueue(object: Callback<MiObjeto>{
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
                 miViewModel.miRecycle?.value    = response.body()
@@ -216,9 +190,7 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
     }
 
     private fun getMedicamentos(ser: ApiService) {
-
-        val miS: String = mEditText.text.toString() + "*"
-
+        val miS = mEditText.text.toString() + "*"
         ser.getMedicamentos(miS,1).enqueue(object : Callback<MiObjeto> {
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {

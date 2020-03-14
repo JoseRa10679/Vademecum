@@ -9,7 +9,7 @@
     <!-- Acerca de.. -->
     <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la Agencia Española del Medicamento</string>
     <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\tHay que introducir tres letras para activar el botón de búsqueda</string>
-    <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto\n\t\tProblemas de suministro.</string>
+    <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tProblemas de suministro\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto</string>
     <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
     <!-- Fin Acerca de.. -->
 
@@ -40,8 +40,14 @@
     <string name="no_conexion">NO HAY CONEXION A INTERNET</string>
     <string name="princpios_activos">Principios Activos:</string>
     <string name="excipientes">Excipientes:</string>
-    <string name="posolog_a">Posología</string>
-    <string name="contraindicaciones">Contraindicaciones</string>
-    <string name="reacciones_adversas">Reacciones Adversas</string>
+    <string name="posolog_a">\tPosología…</string>
+    <string name="contraindicaciones">\tContraindicaciones…</string>
+    <string name="interacciones">\tInteracciones…</string>
+    <string name="reacciones_adversas">\tReacciones Adversas…</string>
+    <string name="volver">Volver</string>
+    <string name="no_internet">No hay conexión a Internet</string>
+    <string name="fertilidad">\tFertilidad, embarazo y lactancia…</string>
+
+
     <!-- Fin Detalle Fármaco-->
 </resources>

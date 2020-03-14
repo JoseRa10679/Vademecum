@@ -7,14 +7,9 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.vademecum.Models.DetalleViewModel
-import com.example.vademecum.objetos.Docs
-import com.example.vademecum.objetos.EsteFarmaco
-import com.example.vademecum.objetos.Excipiente
-import com.example.vademecum.objetos.Presentacion
+import com.example.vademecum.objetos.*
 import kotlinx.android.synthetic.main.activity_detalle_farmaco.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,6 +23,8 @@ class DetalleFarmaco : AppCompatActivity() {
 
     private companion object{
         const val DOBLE_SALTO = "\n\n"
+        const val RUTA = "https://cima.aemps.es/cima/dochtml/ft/"
+        const val FICHA = "FichaTecnica.html"
     }
 
     //<editor-folder desc = " Variables ">
@@ -42,14 +39,16 @@ class DetalleFarmaco : AppCompatActivity() {
     private lateinit var fichaTecnica: TextView
     private lateinit var fichaTecnicaPos: TextView
     private lateinit var fichaTecnicaCont: TextView
+    private lateinit var fichaTecnicaInter: TextView
     private lateinit var fichaTecnicaReac: TextView
+    private lateinit var fichaFertilidad: TextView
 
     private lateinit var miProspecto: TextView
     private lateinit var miPsum: TextView
 
-    private lateinit var miViewModel: DetalleViewModel
-
     private lateinit var service: ApiService
+
+    private val nRegistro: String by lazy {intent.getStringExtra(getString(R.string.regsitro))}
 
     //</editor-folder>
 
@@ -59,25 +58,13 @@ class DetalleFarmaco : AppCompatActivity() {
 
         inicializa()
 
-        miViewModel = ViewModelProvider(this).get(DetalleViewModel::class.java)
-
-        Observer<String>{
-            nombre.text = miViewModel.nombreV.value
-            laboratorio.text = miViewModel.laboratorioV.value
-            pactivos.text = miViewModel.pactivosV.value
-            cpresc.text = miViewModel.cprescV.value
-            conduccion.text = miViewModel.conduccionV.value
-            miPsum.text = miViewModel.miPsumV.value
-            presentaciones.text = miViewModel.presentacionesV.value
-            excipiente.text = miViewModel.excipienteV.value
-            fichaTecnica.text = miViewModel.fichaTecnicaV.value
-            fichaTecnicaPos.text = miViewModel.fichaTecnicaPosV.value
-            fichaTecnicaCont.text = miViewModel.fichaTecnicaContV.value
-            fichaTecnicaReac.text = miViewModel.fichaTecnicaReacV.value
-            miProspecto.text = miViewModel.miProspectoV.value
+        if(!Comun.hasNetworkAvailable(this)){
+            val builder = AlertDialog.Builder(this)
+                .setTitle(getString(R.string.volver))
+                .setMessage(getString(R.string.no_conexion))
+                .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
+            builder.create().show()
         }
-
-        val nRegistro = intent.getStringExtra(getString(R.string.regsitro))
 
         //<editor-folder desc = " Retrofit ">
 
@@ -94,12 +81,10 @@ class DetalleFarmaco : AppCompatActivity() {
 
     }
 
-
     /**
      * Nos da un fármaco con el número de registro
      */
     private fun getFarmacoById(ser: ApiService, reg: String){
-
         ser.getDetalleFarmaco(reg).enqueue((object: Callback<EsteFarmaco>{
             @SuppressLint("SetTextI18n")
             override fun onResponse(call: Call<EsteFarmaco>, response: Response<EsteFarmaco>) {
@@ -116,7 +101,6 @@ class DetalleFarmaco : AppCompatActivity() {
                     miExcip = miExcip + it.nombre + " " + it.cantidad + " " + it.unidad + DOBLE_SALTO
                 }
 
-
                 val misDocs: List<Docs>? = miM?.docs
                 if(misDocs!!.isNotEmpty()) {
                     val fTecnica: String? = misDocs[0].urlHtml
@@ -130,38 +114,75 @@ class DetalleFarmaco : AppCompatActivity() {
                             int.data = Uri.parse(url)
                             startActivity(int)
                         }else{
-                            val toast: Toast = Toast.makeText(applicationContext, getString(R.string.ft_no_accesible), Toast.LENGTH_SHORT)
-                            toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-                            toast.show()
+                            ftNoAccesible()
                         }
                     }
 
 
-                    fichaTecnicaPos.text = "Posología"
+                    fichaTecnicaPos.text = getString(R.string.posolog_a)
                     fichaTecnicaPos.setOnClickListener{
-                        val posRuta =
-                            "https://cima.aemps.es/cima/dochtml/ft/$reg/4.2/FichaTecnica.html"
-                        val int = Intent(Intent.ACTION_VIEW)
-                        int.data = Uri.parse(posRuta)
-                        startActivity(int)
+                        if(fTecnica!=null){
+                            val posRuta =
+                                "$RUTA$reg/4.2/$FICHA"
+                            val int = Intent(Intent.ACTION_VIEW)
+                            int.data = Uri.parse(posRuta)
+                            startActivity(int)
+                        }else{
+                            ftNoAccesible()
+                        }
+
                     }
 
-                    fichaTecnicaCont.text = "Contraindicaciones"
+                    fichaTecnicaCont.text = getString(R.string.contraindicaciones)
                     fichaTecnicaCont.setOnClickListener{
-                        val posRutaC =
-                            "https://cima.aemps.es/cima/dochtml/ft/$reg/4.3/FichaTecnica.html"
-                        val int = Intent(Intent.ACTION_VIEW)
-                        int.data = Uri.parse(posRutaC)
-                        startActivity(int)
+                        if(fTecnica!=null) {
+                            val posRutaC =
+                                "$RUTA$reg/4.3/$FICHA"
+                            val int = Intent(Intent.ACTION_VIEW)
+                            int.data = Uri.parse(posRutaC)
+                            startActivity(int)
+                        }else{
+                            ftNoAccesible()
+                        }
                     }
 
-                    fichaTecnicaReac.text = "Reacciones Adversas"
+                    fichaTecnicaInter.text = getString(R.string.interacciones)
+                    fichaTecnicaInter.setOnClickListener{
+                        if(fTecnica!=null) {
+                            val posRutaC =
+                                "$RUTA$reg/4.5/$FICHA"
+                            val int = Intent(Intent.ACTION_VIEW)
+                            int.data = Uri.parse(posRutaC)
+                            startActivity(int)
+                        }else{
+                            ftNoAccesible()
+                        }
+                    }
+
+                    fichaFertilidad.text = getString(R.string.fertilidad)
+                    fichaFertilidad.setOnClickListener{
+                        if(fTecnica!=null) {
+                            val posRutaC =
+                                "$RUTA$reg/4.6/$FICHA"
+                            val int = Intent(Intent.ACTION_VIEW)
+                            int.data = Uri.parse(posRutaC)
+                            startActivity(int)
+                        }else{
+                            ftNoAccesible()
+                        }
+                    }
+
+                    fichaTecnicaReac.text = getString(R.string.reacciones_adversas)
                     fichaTecnicaReac.setOnClickListener{
-                        val posRutaC =
-                            "https://cima.aemps.es/cima/dochtml/ft/$reg/4.8/FichaTecnica.html"
-                        val int = Intent(Intent.ACTION_VIEW)
-                        int.data = Uri.parse(posRutaC)
-                        startActivity(int)
+                        if(fTecnica!=null) {
+                            val posRutaC =
+                                "$RUTA$reg/4.8/$FICHA"
+                            val int = Intent(Intent.ACTION_VIEW)
+                            int.data = Uri.parse(posRutaC)
+                            startActivity(int)
+                        }else{
+                            ftNoAccesible()
+                        }
                     }
 
                     miProspecto.text = getString(R.string.abrir_prospecto)
@@ -177,6 +198,8 @@ class DetalleFarmaco : AppCompatActivity() {
                             toast.show()
                         }
                     }
+
+
                 }
 
                 nombre.text = miM.nombre
@@ -206,6 +229,11 @@ class DetalleFarmaco : AppCompatActivity() {
     }
 
 
+    fun ftNoAccesible(){
+        val toast: Toast = Toast.makeText(applicationContext, getString(R.string.ft_no_accesible), Toast.LENGTH_SHORT)
+        toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
+        toast.show()
+    }
     private fun inicializa(){
         nombre = findViewById(R.id.txtNombre)
         laboratorio = findViewById(R.id.txtLaboratorio)
@@ -218,7 +246,10 @@ class DetalleFarmaco : AppCompatActivity() {
         fichaTecnica = findViewById(R.id.txtFichaT)
         fichaTecnicaPos = findViewById(R.id.txtFichaTPos)
         fichaTecnicaCont = findViewById(R.id.txtFichaContra)
+        fichaTecnicaInter = findViewById(R.id.txtFichaInterac)
+
         fichaTecnicaReac = findViewById(R.id.txtFichaReacciones)
+        fichaFertilidad = findViewById(R.id.txtFichaFertilidad)
 
         miProspecto = findViewById(R.id.txtProxpecto)
 
