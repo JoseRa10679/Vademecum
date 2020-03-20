@@ -2,6 +2,11 @@ package com.example.vademecum.objetos
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Captura los datos para filtrar los fármacos de la vista
+ * MainActivity
+ * @author José Ramón Laperal
+ */
 data class MiFarmaco(
     @SerializedName("nregistro")
     var nregistro:String,

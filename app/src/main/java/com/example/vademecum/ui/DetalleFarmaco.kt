@@ -1,4 +1,4 @@
-package com.example.vademecum
+package com.example.vademecum.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,15 +9,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.vademecum.Adaptadores.ApiService
+import com.example.vademecum.R
 import com.example.vademecum.objetos.*
 import kotlinx.android.synthetic.main.activity_detalle_farmaco.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-
+/**
+ * @author José Ramón Laperal Mur
+ * Clase que muestra el detalle del fármaco consultado
+ */
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class DetalleFarmaco : AppCompatActivity() {
 
@@ -46,8 +49,6 @@ class DetalleFarmaco : AppCompatActivity() {
     private lateinit var miProspecto: TextView
     private lateinit var miPsum: TextView
 
-    private lateinit var service: ApiService
-
     private val nRegistro: String by lazy {intent.getStringExtra(getString(R.string.regsitro))}
 
     //</editor-folder>
@@ -62,27 +63,18 @@ class DetalleFarmaco : AppCompatActivity() {
             val builder = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.volver))
                 .setMessage(getString(R.string.no_conexion))
-                .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
+                .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish()}
             builder.create().show()
         }
 
-        //<editor-folder desc = " Retrofit ">
-
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.base_url))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        service = retrofit.create(ApiService::class.java)
-
-        //</editor-folder>
-
-        getFarmacoById(service, nRegistro)
+        getFarmacoById(Comun.service, nRegistro)
 
     }
 
     /**
-     * Nos da un fármaco con el número de registro
+     * Función que muestra las características del fármaco seleccionado
+     * @param ser instancia del ApiServide de Retrofit
+     * @param reg número de registro del fármco en cuestión
      */
     private fun getFarmacoById(ser: ApiService, reg: String){
         ser.getDetalleFarmaco(reg).enqueue((object: Callback<EsteFarmaco>{
@@ -90,21 +82,30 @@ class DetalleFarmaco : AppCompatActivity() {
             override fun onResponse(call: Call<EsteFarmaco>, response: Response<EsteFarmaco>) {
                 val miM: EsteFarmaco? = response.body()
                 val miPr: List<Presentacion>? = miM?.presentaciones
+                val miPa: List<PActivos>? = miM?.pactivos
+                val miE: List<Excipiente>? = miM?.excipientes
+                val misDocs: List<Docs>? = miM?.docs
+
+                var miPAct = ""
+                miPa?.forEach {
+                    miPAct = miPAct + it.nombre + " " + it.cantidad + " " + it.unidad + DOBLE_SALTO
+                }
+
                 var miPresent =""
                 miPr?.forEach {
                     miPresent = miPresent + it.nombre + DOBLE_SALTO
                 }
 
-                val miE: List<Excipiente>? = miM?.excipientes
+
                 var miExcip = ""
                 miE?.forEach {
                     miExcip = miExcip + it.nombre + " " + it.cantidad + " " + it.unidad + DOBLE_SALTO
                 }
 
-                val misDocs: List<Docs>? = miM?.docs
+
                 if(misDocs!!.isNotEmpty()) {
                     val fTecnica: String? = misDocs[0].urlHtml
-                    val prospecto: String? = misDocs[1].urlHtml
+                    val prospecto = if(misDocs.size>1){misDocs[1].urlHtml}else{null}
 
                     fichaTecnica.text = getString(R.string.abrir_ficha_tecnica)
                     fichaTecnica.setOnClickListener {
@@ -117,7 +118,6 @@ class DetalleFarmaco : AppCompatActivity() {
                             ftNoAccesible()
                         }
                     }
-
 
                     fichaTecnicaPos.text = getString(R.string.posolog_a)
                     fichaTecnicaPos.setOnClickListener{
@@ -187,24 +187,20 @@ class DetalleFarmaco : AppCompatActivity() {
 
                     miProspecto.text = getString(R.string.abrir_prospecto)
                     miProspecto.setOnClickListener {
-                        if(prospecto!=null) {
+                        if(prospecto!=null){
                             val url: String? = prospecto
                             val int = Intent(Intent.ACTION_VIEW)
                             int.data = Uri.parse(url)
                             startActivity(int)
                         }else{
-                            val toast: Toast = Toast.makeText(applicationContext, getString(R.string.p_no_accesible), Toast.LENGTH_SHORT)
-                            toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-                            toast.show()
+                            proNoAccesible()
                         }
                     }
-
-
                 }
 
                 nombre.text = miM.nombre
                 laboratorio.text = miM.labtitular
-                pactivos.text = DOBLE_SALTO + miM.pactivos + DOBLE_SALTO
+                pactivos.text = DOBLE_SALTO + miPAct
                 cpresc.text = miM.cpresc
                 if(miM.conduc){
                     txtConduccion.text=getString(R.string.puede_afectar_cond)
@@ -228,12 +224,31 @@ class DetalleFarmaco : AppCompatActivity() {
         }))
     }
 
+    //<editor-folder desc = " Toast ">
 
+    /**
+     * Toast que informa de red no accesible.
+     */
     fun ftNoAccesible(){
         val toast: Toast = Toast.makeText(applicationContext, getString(R.string.ft_no_accesible), Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
         toast.show()
     }
+
+    /**
+     * Toast que informa que el prospecto no está accesible
+     */
+    fun proNoAccesible(){
+        val toast: Toast = Toast.makeText(applicationContext, getString(R.string.proNoAccesible), Toast.LENGTH_SHORT)
+        toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
+        toast.show()
+    }
+
+    //</editor-folder>
+
+    /**
+     * Inicializa las variables de la interfase
+     */
     private fun inicializa(){
         nombre = findViewById(R.id.txtNombre)
         laboratorio = findViewById(R.id.txtLaboratorio)

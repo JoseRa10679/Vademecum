@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".DetalleFarmaco">
+    tools:context=".ui.DetalleFarmaco">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarDetalle"
@@ -242,6 +242,16 @@
                     android:textSize="@dimen/catorce_sp"
                     android:textStyle="bold" />
 
+                <View
+                    android:id="@+id/lineaHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/colorAzulTexto" />
+
                 <TextView
                     android:id="@+id/txtFichaTPos"
                     android:layout_width="match_parent"
@@ -306,6 +316,17 @@
                     android:text="@string/fertilidad"
                     android:textColor="@color/colorVerdeTexto"
                     android:textSize="@dimen/catorce_sp" />
+
+                <View
+                    android:id="@+id/lineaHorizontal2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/colorAzulTexto" />
+
 
                 <TextView
                     android:id="@+id/txtProxpecto"

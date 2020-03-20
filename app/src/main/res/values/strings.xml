@@ -8,7 +8,7 @@
 
     <!-- Acerca de.. -->
     <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la Agencia Española del Medicamento</string>
-    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\tHay que introducir tres letras para activar el botón de búsqueda</string>
+    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\tHay que introducir tres letras para activar el botón de búsqueda.\n\tLas búsquedas pueden hacerse por más de una palabra.\n\tMuestra un máximo de 25 resultados por lo que hay que filtrar todo lo que se pueda.</string>
     <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tProblemas de suministro\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto</string>
     <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
     <!-- Fin Acerca de.. -->
@@ -47,6 +47,7 @@
     <string name="volver">Volver</string>
     <string name="no_internet">No hay conexión a Internet</string>
     <string name="fertilidad">\tFertilidad, embarazo y lactancia…</string>
+    <string name="proNoAccesible">Prospecto no accesible</string>
 
 
     <!-- Fin Detalle Fármaco-->

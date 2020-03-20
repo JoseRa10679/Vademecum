@@ -1,6 +1,5 @@
-package com.example.vademecum
+package com.example.vademecum.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -21,24 +20,32 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.vademecum.Adaptadores.Adaptador
+import com.example.vademecum.Adaptadores.ApiService
+import com.example.vademecum.Adaptadores.OnFarItemClickListner
 import com.example.vademecum.Models.MainViewModel
-import com.example.vademecum.objetos.*
+import com.example.vademecum.R
+import com.example.vademecum.objetos.Comun
+import com.example.vademecum.objetos.MiFarmaco
+import com.example.vademecum.objetos.MiObjeto
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity(), OnFarItemClickListner {
+/**
+ * @author Jose Ramón Laperal Mur
+ * Clase prinicpal que filtra los fármacos por nombre y llena el RecyclerView
+ */
+class MainActivity: AppCompatActivity(),
+    OnFarItemClickListner {
 
     //<editor-folder desc = " Variables ">
    private lateinit var mButton: Button
    private lateinit var mEditText: EditText
    private lateinit var chkActivo: CheckBox
-   private lateinit var service: ApiService
 
-   private lateinit var miViewModel: MainViewModel
+    private lateinit var miViewModel: MainViewModel
 
    private lateinit var recyclerFarmacos: RecyclerView
 
@@ -89,10 +96,7 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        inicializa()
-
-        miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
+    //Comprueba si hay Internet
         if(!Comun.hasNetworkAvailable(this)){
 
             val builder = AlertDialog.Builder(this)
@@ -102,16 +106,11 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
             builder.create().show()
 
         }
-        //<editor-folder desc = " Retrofit ">
 
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.base_url))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        service = retrofit.create(ApiService::class.java)
+        inicializa()
 
-        //</editor-folder>
 
         // Se activa el botón cuando el número de letras es mayor a 2
         mEditText.addTextChangedListener(object : TextWatcher {
@@ -131,12 +130,14 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
             true
         }
 
+//        Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
         mButton.setOnClickListener{
             if(Comun.hasNetworkAvailable(this)) {
+                val miS: String = mEditText.text.toString()
                 if(chkActivo.isChecked ){
-                    getPactivos(service)
+                    getPactivos(Comun.service, miS)
                 }else{
-                    getMedicamentos(service)
+                    getMedicamentos(Comun.service, miS)
                 }
             }else{
                 val builder = AlertDialog.Builder(this)
@@ -145,7 +146,6 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
                     .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
                 builder.create().show()
             }
-
         }
 
     }
@@ -162,6 +162,84 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         UIUtil.showKeyboard(this, mEditText)
     }
 
+    //<editor-folder desc = " Consultas ">
+
+    /**
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     * Función que filtra los fármcos por el Principio Activo
+     */
+    private fun getPactivos(ser: ApiService, miS: String){
+        ser.getPActivos(miS, 1).enqueue(object: Callback<MiObjeto>{
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                miViewModel.miRecycle?.value  = response.body()
+                val miValor: MiObjeto? = miViewModel.miRecycle?.value
+                val miLista: List<MiFarmaco>? = miViewModel.miRecycle?.value?.resultados
+                getComun(miValor, miLista)
+                contador(miValor, miLista)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     */
+    private fun getMedicamentos(ser: ApiService, miS: String) {
+        ser.getMedicamentos(miS,1).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                miViewModel.miRecycle?.value = response.body()
+                getComun(miViewModel.miRecycle?.value)
+                contador(miViewModel.miRecycle?.value)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * @author José Ramón Laperal Mur
+     * @param mG lista de objetos que llena el RecyclerView
+     * Llena el RecyclerView con los fármacos filtrados
+     */
+    private fun getComun(mG: MiObjeto?, miLista: List<MiFarmaco>? = mG?.resultados){
+
+        recyclerFarmacos = findViewById(R.id.recyclerId)
+        val layoutManager = LinearLayoutManager(this@MainActivity)
+        layoutManager.orientation = LinearLayoutManager.VERTICAL
+        recyclerFarmacos.layoutManager = layoutManager
+
+        val adapter = miLista?.let {
+            Adaptador(this@MainActivity,it,this)
+        }
+        recyclerFarmacos.adapter = adapter
+
+        UIUtil.hideKeyboard(this@MainActivity)
+
+    }
+
+    //</editor-folder>
+
+    /**
+     * Envía a la vista DetalleFarmaco el número de registro del
+     * fármaco seleccionado en el RecyclerView
+     * @param item objeto que tiene los datos del fármaco seleccionado
+     * @param position representa la posición en el RecyclerView
+     */
+    override fun onItemClick(item: MiFarmaco, position: Int) {
+        val intent = Intent(this, DetalleFarmaco::class.java)
+        intent.putExtra("REGISTRO", item.nregistro)
+        startActivity(intent)
+    }
+
+    /**
+     * Inicializa los controles
+     */
     private fun inicializa(){
         mButton = findViewById(R.id.botonBuscar)
         mEditText = findViewById(R.id.txtBuscar)
@@ -173,67 +251,19 @@ class MainActivity : AppCompatActivity(), OnFarItemClickListner {
         chkActivo = findViewById(R.id.chkPActivo)
     }
 
-    //<editor-folder desc = " Consultas ">
-
-    private fun getPactivos(ser: ApiService){
-        val miS = mEditText.text.toString() + "*"
-        ser.getPActivos(miS, 1).enqueue(object: Callback<MiObjeto>{
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                miViewModel.miRecycle?.value    = response.body()
-                getComun(miViewModel.miRecycle?.value)
-            }
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-
-    }
-
-    private fun getMedicamentos(ser: ApiService) {
-        val miS = mEditText.text.toString() + "*"
-        ser.getMedicamentos(miS,1).enqueue(object : Callback<MiObjeto> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                miViewModel.miRecycle?.value = response.body()
-
-                getComun(miViewModel.miRecycle?.value)
-            }
-
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-    }
-
-    private fun getComun(mG: MiObjeto?){
-        val miLista = mG?.resultados
-
-        recyclerFarmacos = findViewById(R.id.recyclerId)
-        val layoutManager = LinearLayoutManager(this@MainActivity)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        recyclerFarmacos.layoutManager = layoutManager
-
-        val adapter = miLista?.let { Adaptador(this@MainActivity, it, this) }
-        recyclerFarmacos.adapter = adapter
-
-        UIUtil.hideKeyboard(this@MainActivity)
-
-        if(mG!=null) {
+    /**
+     * Muestra un Toast con el número de items del total de entradas
+     * @param m Objeto que muestra los resultados de la consulta
+     */
+    private fun contador(m: MiObjeto?, lista: List<MiFarmaco>? = m?.resultados){
+        if(m!=null) {
             val toast: Toast = Toast.makeText(
                 applicationContext,
-                """${miLista?.size.toString()} entradas de un total de ${mG.totalFilas}""",
+                """${lista?.size.toString()} entradas de un total de ${m.totalFilas}""",
                 Toast.LENGTH_SHORT)
             toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 0)
             toast.show()
         }
     }
-
-    override fun onItemClick(item: MiFarmaco, position: Int) {
-        val intent = Intent(this, DetalleFarmaco::class.java)
-        intent.putExtra(getString(R.string.regsitro), item.nregistro)
-        startActivity(intent)
-    }
-
-    //</editor-folder>
 
 }

@@ -1,4 +1,4 @@
-package com.example.vademecum.objetos
+package com.example.vademecum.Adaptadores
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,8 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
+import com.example.vademecum.objetos.MiFarmaco
 import kotlinx.android.synthetic.main.item.view.*
 
+/**
+ * Adapter para que funcione el RecyclerView
+ * @author José Ramón Laperal
+ * @param context
+ * @param miLista
+ * @param clickListner
+ */
 class Adaptador(private val context: Context, private val miLista: List<MiFarmaco>, private var clickListner: OnFarItemClickListner):RecyclerView.Adapter<Adaptador.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

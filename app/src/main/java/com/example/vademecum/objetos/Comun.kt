@@ -2,11 +2,17 @@ package com.example.vademecum.objetos
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.provider.Settings.Global.getString
-import com.example.vademecum.R
+import com.example.vademecum.Adaptadores.ApiService
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * @author José Ramón Laperal
+ * Objeto que contiene funciones comunes
+ */
 object Comun {
+
+    private  const val uRL: String = "https://cima.aemps.es/cima/rest/"
 
     /**
      *  Comprueba si Internet está accesible
@@ -18,5 +24,19 @@ object Comun {
         val network = manager?.activeNetworkInfo
         return (network != null)
     }
+
+
+    //<editor-folder desc = " Retrofit ">
+
+    val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(uRL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    var service: ApiService = retrofit.create(ApiService::class.java)
+
+    //</editor-folder>
+
+
 
 }

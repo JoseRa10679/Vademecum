@@ -3,6 +3,7 @@ package com.example.vademecum.objetos
 import com.google.gson.annotations.SerializedName
 
 /**
+ * @author José Ramón Laperal
  * Este objeto se usa solo para el layout DetalleFarmaco
  */
 data class EsteFarmaco (
@@ -12,8 +13,8 @@ data class EsteFarmaco (
     var nombre: String,
     @SerializedName("labtitular")
     var labtitular: String,
-    @SerializedName("pactivos")
-    var pactivos: String,
+    @SerializedName("principiosActivos")
+    var pactivos: List<PActivos>,
     @SerializedName("cpresc")
     var cpresc: String,
     @SerializedName("conduc")
