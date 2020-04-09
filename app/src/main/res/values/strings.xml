@@ -7,8 +7,8 @@
     <string name="versi_n">Versión</string>
 
     <!-- Acerca de.. -->
-    <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la Agencia Española del Medicamento</string>
-    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\tHay que introducir tres letras para activar el botón de búsqueda.\n\tLas búsquedas pueden hacerse por más de una palabra.\n\tMuestra un máximo de 25 resultados por lo que hay que filtrar todo lo que se pueda.</string>
+    <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la <a href="https://cima.aemps.es/cima/publico/home.html">Agencia Española del Medicamento.</a></string>
+    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\n\tSe puede ordenar por nombre y por laboratorio distribuidor\n\n\tHay que introducir tres letras para activar el botón de búsqueda.\n\n\tMuestra un máximo de 25 resultados por lo que hay que filtrar todo lo que se pueda.</string>
     <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tProblemas de suministro\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto</string>
     <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
     <!-- Fin Acerca de.. -->
@@ -20,9 +20,8 @@
     <string name="nombre">Nombre</string>
     <string name="prescripcion">Prescripcion</string>
     <string name="conducci_n">Conducción</string>
-    <string name="presentaciones">Presentaciones:</string>
-    <string name="presentaciones2">Presentaciones</string>
-    <string name="ficha_tecnica">Ficha Tecnica completa</string>
+    <string name="presentaciones">Presentaciones</string>
+       <string name="ficha_tecnica">Ficha Tecnica completa</string>
     <string name="prospecto">Prospecto</string>
     <string name="problemas_de_suministro">Problemas de suministro</string>
     <string name="puede_afectar_cond">Puede afectar a la conducción</string>
@@ -33,21 +32,25 @@
     <string name="abrir_ficha_tecnica">Abrir Ficha Técnica completa…</string>
     <string name="ft_no_accesible">Ficha Técnica no accesible</string>
     <string name="abrir_prospecto">Abrir Prospecto…</string>
-    <string name="p_no_accesible">Prospecto no accesible</string>
-    <string name="base_url">https://cima.aemps.es/cima/rest/</string>
     <string name="salir">Salir</string>
     <string name="salir_aplicacion">No hay conexión an Internet.\nVa a salir de la aplicación.\n\nEl acceso a Intenet es necesario para conectar con la base de datos de la AEMS.</string>
-    <string name="no_conexion">NO HAY CONEXION A INTERNET</string>
-    <string name="princpios_activos">Principios Activos:</string>
-    <string name="excipientes">Excipientes:</string>
+    <string name="excipientes">Excipientes</string>
+    <string name="indicaciones">\tIndicaciones…</string>
     <string name="posolog_a">\tPosología…</string>
     <string name="contraindicaciones">\tContraindicaciones…</string>
     <string name="interacciones">\tInteracciones…</string>
     <string name="reacciones_adversas">\tReacciones Adversas…</string>
-    <string name="volver">Volver</string>
-    <string name="no_internet">No hay conexión a Internet</string>
     <string name="fertilidad">\tFertilidad, embarazo y lactancia…</string>
     <string name="proNoAccesible">Prospecto no accesible</string>
+    <string name="sinConexion">Sin conexión a Internet</string>
+    <string name="reintentar">Reintentar</string>
+    <string name="strSi">Si</string>
+    <string name="strNo">No</string>
+    <string name="strComprobar">Comprobar de nuevo</string>
+    <string name="strDetalleFarmaco">Detalle Fármaco</string>
+    <string name="o_por_nombre">Nombre</string>
+    <string name="o_por_laboratorio">Laboratorio</string>
+
 
 
     <!-- Fin Detalle Fármaco-->

@@ -23,7 +23,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@mipmap/ic_launcher_foreground"
         app:title="@string/acerca_de"
-        app:titleTextColor="@color/colorAccent" />
+        app:titleTextColor="@color/colorAccent"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     <TextView
         android:id="@+id/txtDescripcion1"

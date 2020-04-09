@@ -12,15 +12,21 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object Comun {
 
-    private  const val uRL: String = "https://cima.aemps.es/cima/rest/"
+    val nVADEMECUM: String by lazy { "Vademecum versión: " }
+    val nMIFIRMA: String by lazy { "\n@Josera. Marzo 2020" }
+
+    private const val uRL: String = "https://cima.aemps.es/cima/rest/"
 
     /**
      *  Comprueba si Internet está accesible
+     *  @param context Contexto en la que se aplica la función
+     *  @return network booleano
      */
     @Suppress("DEPRECATION")
     fun hasNetworkAvailable(context: Context): Boolean {
         val service: String = Context.CONNECTIVITY_SERVICE
-        val manager: ConnectivityManager? = context.getSystemService(service) as ConnectivityManager?
+        val manager: ConnectivityManager? =
+            context.getSystemService(service) as ConnectivityManager?
         val network = manager?.activeNetworkInfo
         return (network != null)
     }
@@ -28,15 +34,16 @@ object Comun {
 
     //<editor-folder desc = " Retrofit ">
 
-    val retrofit: Retrofit = Retrofit.Builder()
+    private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(uRL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     var service: ApiService = retrofit.create(ApiService::class.java)
 
-    //</editor-folder>
 
+
+    //</editor-folder>
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.vademecum.objetos
+package com.example.vademecum.Dataclass
 
 /**
  * @author José Ramón Laperal

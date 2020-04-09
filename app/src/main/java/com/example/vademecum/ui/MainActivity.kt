@@ -25,29 +25,41 @@ import com.example.vademecum.Adaptadores.ApiService
 import com.example.vademecum.Adaptadores.OnFarItemClickListner
 import com.example.vademecum.Models.MainViewModel
 import com.example.vademecum.R
+import com.example.vademecum.objetos.CFecha
 import com.example.vademecum.objetos.Comun
-import com.example.vademecum.objetos.MiFarmaco
-import com.example.vademecum.objetos.MiObjeto
+import com.example.vademecum.Dataclass.MiFarmaco
+import com.example.vademecum.Dataclass.MiObjeto
+import com.example.vademecum.objetos.Comun.nMIFIRMA
+import com.example.vademecum.objetos.Comun.nVADEMECUM
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+//<editor-folder desc = " Constantes ">
+
+private val ATENCION: String by lazy{ "Atención" }
+private val PROGRAMA_PASADO:String by lazy{ "El programa está pasado de fecha.\nContacta con el programador."}
+private val ACEPTAR:String by lazy{ "Aceptar" }
+
+//</editor-folder>
+
 /**
  * @author Jose Ramón Laperal Mur
  * Clase prinicpal que filtra los fármacos por nombre y llena el RecyclerView
  */
-class MainActivity: AppCompatActivity(),
+class MainActivity : AppCompatActivity(),
     OnFarItemClickListner {
 
     //<editor-folder desc = " Variables ">
-   private lateinit var mButton: Button
-   private lateinit var mEditText: EditText
-   private lateinit var chkActivo: CheckBox
+    private lateinit var mButton: Button
+    private lateinit var mEditText: EditText
+    private lateinit var chkActivo: CheckBox
+    private lateinit var chkOrdenNombre: CheckBox
+    private lateinit var chkOrdenLaboratorio: CheckBox
 
     private lateinit var miViewModel: MainViewModel
-
-   private lateinit var recyclerFarmacos: RecyclerView
+    private lateinit var recyclerFarmacos: RecyclerView
 
 
     //</editor-folder>
@@ -73,11 +85,12 @@ class MainActivity: AppCompatActivity(),
             val toast =
                 Toast.makeText(
                     this@MainActivity,
-                    "Vademecum versión: $version\n@Josera. Marzo 2020",
+                    "$nVADEMECUM$version$nMIFIRMA",
                     Toast.LENGTH_SHORT
                 )
             toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
             toast.show()
+
         } else {
 
             val intent = Intent(this, Acercade::class.java)
@@ -96,55 +109,66 @@ class MainActivity: AppCompatActivity(),
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-    //Comprueba si hay Internet
-        if(!Comun.hasNetworkAvailable(this)){
 
+        //<editor-folder desc = " Comprueba Fecha Limite ">
+
+        if(CFecha.comprueba("01/01/2022")){
             val builder = AlertDialog.Builder(this)
-                .setTitle(getString(R.string.salir))
-                .setMessage(getString(R.string.salir_aplicacion))
-                .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
+                .setTitle(ATENCION)
+                .setMessage(PROGRAMA_PASADO)
+                .setIcon(R.mipmap.ic_launcher_foreground)
+                .setPositiveButton(ACEPTAR) { _, _ -> finish() }
             builder.create().show()
-
         }
+
+        //</editor-folder>
+
+        compruebaConexionInternet(this)
 
         miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
+
         inicializa()
 
-
-        // Se activa el botón cuando el número de letras es mayor a 2
+        //      Se activa el botón cuando el número de letras es mayor a 2
         mEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                mButton.isEnabled = mEditText.text.length>2
+                mButton.isEnabled = mEditText.text.length > 2
             }
 
         })
 
-        //Borra el contenido del EditTexBox y limpia el RecyclerView
-        mEditText.setOnLongClickListener{
+        //      Borra el contenido del EditTexBox y limpia el RecyclerView
+        mEditText.setOnLongClickListener {
             mEditText.text.clear()
             getComun(null)
             UIUtil.showKeyboard(this, mEditText)
             true
         }
 
-//        Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
-        mButton.setOnClickListener{
-            if(Comun.hasNetworkAvailable(this)) {
+        //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
+        chkOrdenNombre.setOnClickListener {
+            if (chkOrdenNombre.isChecked) chkOrdenLaboratorio.isChecked = false
+        }
+
+        //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
+        chkOrdenLaboratorio.setOnClickListener {
+            if (chkOrdenLaboratorio.isChecked) chkOrdenNombre.isChecked = false
+        }
+
+        //      Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
+        mButton.setOnClickListener {
+            if (Comun.hasNetworkAvailable(this)) {
                 val miS: String = mEditText.text.toString()
-                if(chkActivo.isChecked ){
+                if (chkActivo.isChecked) {
                     getPactivos(Comun.service, miS)
-                }else{
+                } else {
                     getMedicamentos(Comun.service, miS)
                 }
-            }else{
-                val builder = AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.salir))
-                    .setMessage(getString(R.string.salir_aplicacion))
-                    .setPositiveButton(getString(R.string.aceptar)){ _, _ -> this.finish() }
-                builder.create().show()
+            } else {
+                compruebaConexionInternet(this)
             }
         }
 
@@ -153,9 +177,10 @@ class MainActivity: AppCompatActivity(),
     override fun onResume() {
         super.onResume()
 
-        if(mEditText.text.toString() !=""){
+        //        Comprba que la caja de búsqueda no esté vacía para cargar el recyclerview
+        if (mEditText.text.toString() != "") {
             getComun(miViewModel.miRecycle?.value)
-        }else{
+        } else {
             getComun(null)
         }
         mEditText.requestFocus()
@@ -165,19 +190,17 @@ class MainActivity: AppCompatActivity(),
     //<editor-folder desc = " Consultas ">
 
     /**
+     * Función que filtra los fármcos por el Principio Activo
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
-     * Función que filtra los fármcos por el Principio Activo
      */
-    private fun getPactivos(ser: ApiService, miS: String){
-        ser.getPActivos(miS, 1).enqueue(object: Callback<MiObjeto>{
+    private fun getPactivos(ser: ApiService, miS: String) {
+        //        Filtra solo los comercializados
+        ser.getPActivos(miS, 1).enqueue(object : Callback<MiObjeto> {
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                miViewModel.miRecycle?.value  = response.body()
-                val miValor: MiObjeto? = miViewModel.miRecycle?.value
-                val miLista: List<MiFarmaco>? = miViewModel.miRecycle?.value?.resultados
-                getComun(miValor, miLista)
-                contador(miValor, miLista)
+                funcionListado(response)
             }
+
             override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
                 t.printStackTrace()
             }
@@ -185,17 +208,16 @@ class MainActivity: AppCompatActivity(),
     }
 
     /**
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
-     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
      */
     private fun getMedicamentos(ser: ApiService, miS: String) {
-        ser.getMedicamentos(miS,1).enqueue(object : Callback<MiObjeto> {
+        ser.getMedicamentos(miS, 1).enqueue(object : Callback<MiObjeto> {
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                miViewModel.miRecycle?.value = response.body()
-                getComun(miViewModel.miRecycle?.value)
-                contador(miViewModel.miRecycle?.value)
+                funcionListado(response)
             }
+
             override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
                 t.printStackTrace()
             }
@@ -203,24 +225,35 @@ class MainActivity: AppCompatActivity(),
     }
 
     /**
+     * Llena el RecyclerView con los fármacos filtrados
      * @author José Ramón Laperal Mur
      * @param mG lista de objetos que llena el RecyclerView
-     * Llena el RecyclerView con los fármacos filtrados
      */
-    private fun getComun(mG: MiObjeto?, miLista: List<MiFarmaco>? = mG?.resultados){
+    private fun getComun(mG: MiObjeto?) {
+        val miLista: List<MiFarmaco>? = mG?.resultados
 
-        recyclerFarmacos = findViewById(R.id.recyclerId)
+//      Oredena por nombre y laboratorio
+        val sortList: MutableList<MiFarmaco>?
+
+        sortList = when {
+            chkOrdenNombre.isChecked && !chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
+                compareBy { it.nombre })?.toMutableList()
+            !chkOrdenNombre.isChecked && chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
+                compareBy { it.labtitular })?.toMutableList()
+            else -> miLista?.toMutableList()
+        }
+
+
         val layoutManager = LinearLayoutManager(this@MainActivity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerFarmacos.layoutManager = layoutManager
 
-        val adapter = miLista?.let {
-            Adaptador(this@MainActivity,it,this)
+        val adapter = sortList?.let {
+            Adaptador(this@MainActivity, it, this)
         }
         recyclerFarmacos.adapter = adapter
 
         UIUtil.hideKeyboard(this@MainActivity)
-
     }
 
     //</editor-folder>
@@ -240,30 +273,101 @@ class MainActivity: AppCompatActivity(),
     /**
      * Inicializa los controles
      */
-    private fun inicializa(){
+    private fun inicializa() {
         mButton = findViewById(R.id.botonBuscar)
         mEditText = findViewById(R.id.txtBuscar)
         mEditText.requestFocus()
 
 //      Convierte todas las entradas en mayúsculas
-        mEditText.filters = mEditText.filters + InputFilter.AllCaps()
+        mEditText.filters += InputFilter.AllCaps()
 
         chkActivo = findViewById(R.id.chkPActivo)
+        chkOrdenNombre = findViewById(R.id.chkOrdenNombre)
+        chkOrdenLaboratorio = findViewById(R.id.chkOrdenLaboratorio)
+
+        recyclerFarmacos = findViewById(R.id.recyclerId)
+    }
+
+    //<editor-folder desc = " Conexión a Internet ">
+
+    /**
+     * Comprueba la conexión a Internet y permite reintentar la conexión antes del diálogo de
+     * salir de la aplicación
+     * @param activity Actividad a la que se aplica
+     */
+    private fun compruebaConexionInternet(activity: MainActivity) {
+        if (!Comun.hasNetworkAvailable(activity)) {
+            val builder = AlertDialog.Builder(activity)
+                .setTitle(R.string.sinConexion)
+                .setMessage(R.string.reintentar)
+                .setPositiveButton(R.string.strSi) { _, _ ->
+                    miComprobacion(0, activity)
+                }
+                .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
+            builder.create().show()
+
+        }
     }
 
     /**
-     * Muestra un Toast con el número de items del total de entradas
-     * @param m Objeto que muestra los resultados de la consulta
+     * Permite inintentar la conexión hasta 3 veces
+     * @param n número de veces que se repite el bucle
+     * @param activity Actividad a la que se aplica
      */
-    private fun contador(m: MiObjeto?, lista: List<MiFarmaco>? = m?.resultados){
-        if(m!=null) {
-            val toast: Toast = Toast.makeText(
-                applicationContext,
-                """${lista?.size.toString()} entradas de un total de ${m.totalFilas}""",
-                Toast.LENGTH_SHORT)
-            toast.setGravity(Gravity.BOTTOM or Gravity.FILL_HORIZONTAL, 0, 0)
-            toast.show()
+    private fun miComprobacion(n: Int, activity: MainActivity) {
+        if (!Comun.hasNetworkAvailable(activity)) {
+            val builder = AlertDialog.Builder(activity)
+            if (n > 2) {
+                builder
+                    .setTitle(R.string.salir)
+                    .setMessage(R.string.salir_aplicacion)
+                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
+
+            } else {
+                builder
+                    .setTitle(R.string.salir)
+                    .setMessage(R.string.salir_aplicacion)
+                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
+                    .setNegativeButton(R.string.strComprobar) { _, _ ->
+                        miComprobacion(
+                            n + 1,
+                            activity
+                        )
+                    }
+            }
+                .create().show()
         }
     }
+
+    //</editor-folder>
+
+    /**
+     * Ejecuta el código según la respuesta de Retofit
+     * @param res Respuesta de Retrofit
+     */
+    private fun funcionListado(res: Response<MiObjeto>) {
+        if (res.isSuccessful) {
+            with(miViewModel){
+                miRecycle?.value = res.body()
+                val miValor: MiObjeto? = miRecycle?.value
+                getComun(miValor)
+                contador(miValor, applicationContext)
+            }
+        } else {
+            errorToastListado()
+        }
+    }
+
+    //    Toast que avisa del error en la ejecución de la consulta.
+    private fun errorToastListado() {
+        val toast: Toast = Toast.makeText(
+            applicationContext,
+            "No se ha podido el listado de fármacoslos datos",
+            Toast.LENGTH_LONG
+        )
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
+        toast.show()
+    }
+
 
 }

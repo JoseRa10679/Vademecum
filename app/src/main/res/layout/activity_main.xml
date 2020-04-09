@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="@dimen/cero_dp"
@@ -18,7 +19,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@mipmap/ic_launcher_foreground"
         app:title="@string/app_name"
-        app:titleTextColor="@color/colorAccent" />
+        app:titleTextColor="@color/colorAccent"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     <Button
         android:id="@+id/botonBuscar"
@@ -38,11 +40,11 @@
         android:layout_marginStart="@dimen/ocho_dp"
         android:layout_marginEnd="@dimen/ocho_dp"
         android:ems="10"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/botonBuscar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:importantForAutofill="no"
         tools:ignore="LabelFor" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -60,11 +62,12 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/ocho_dp"
         android:layout_marginEnd="@dimen/ocho_dp"
-        android:layoutDirection="rtl"
+        android:gravity="center"
+        android:layoutDirection="locale"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,15 +77,33 @@
             android:id="@+id/chkPActivo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layoutDirection="rtl"
+            android:layoutDirection="locale"
             android:orientation="horizontal"
-            android:padding="@dimen/ocho_dp"
             android:text="@string/p_activo"
             android:textAlignment="textStart"
+            android:textDirection="firstStrongRtl" />
+
+        <CheckBox
+            android:id="@+id/chkOrdenNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="locale"
+            android:orientation="horizontal"
+            android:text="@string/o_por_nombre"
+            android:textAlignment="textStart"
             android:textDirection="firstStrongLtr"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteX="307dp"
-            tools:layout_editor_absoluteY="101dp" />
+            android:visibility="visible" />
+
+        <CheckBox
+            android:id="@+id/chkOrdenLaboratorio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="locale"
+            android:orientation="horizontal"
+            android:text="@string/o_por_laboratorio"
+            android:textAlignment="textStart"
+            android:textDirection="firstStrongLtr"
+            android:visibility="visible" />
 
 
     </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.vademecum.objetos
+package com.example.vademecum.Dataclass
 
 import com.google.gson.annotations.SerializedName
 
@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
  */
 data class MiFarmaco(
     @SerializedName("nregistro")
-    var nregistro:String,
+    var nregistro: String,
     @SerializedName("nombre")
     var nombre: String,
     @SerializedName("labtitular")

@@ -1,13 +1,16 @@
 package com.example.vademecum.Adaptadores
 
+import android.animation.Animator
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
-import com.example.vademecum.objetos.MiFarmaco
+import com.example.vademecum.Dataclass.MiFarmaco
 import kotlinx.android.synthetic.main.item.view.*
+import kotlin.math.max
 
 /**
  * Adapter para que funcione el RecyclerView
@@ -16,7 +19,11 @@ import kotlinx.android.synthetic.main.item.view.*
  * @param miLista
  * @param clickListner
  */
-class Adaptador(private val context: Context, private val miLista: List<MiFarmaco>, private var clickListner: OnFarItemClickListner):RecyclerView.Adapter<Adaptador.MyViewHolder>() {
+class Adaptador(
+    private val context: Context,
+    private val miLista: List<MiFarmaco>,
+    private var clickListner: OnFarItemClickListner
+) : RecyclerView.Adapter<Adaptador.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item, parent, false)
@@ -30,24 +37,54 @@ class Adaptador(private val context: Context, private val miLista: List<MiFarmac
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val miP = miLista[position]
         holder.setData(miP, clickListner)
-
-
     }
 
-    inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        fun setData(f: MiFarmaco?, action: OnFarItemClickListner){
-            itemView.itemFarmaco.text = f!!.nombre
-            itemView.itemLaboratorio.text = f.labtitular
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun setData(f: MiFarmaco?, action: OnFarItemClickListner) {
+            with(itemView){
+                itemFarmaco.text = f!!.nombre
+                itemLaboratorio.text = f.labtitular
 
-            itemView.setOnClickListener{
-                action.onItemClick(f, adapterPosition)
+                setOnClickListener {
+                    action.onItemClick(f, adapterPosition)
+                }
             }
-
         }
     }
+
+    /**
+     * Código para activar la animación
+     * @param holder
+     */
+    override fun onViewAttachedToWindow(holder: MyViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        animatedCircularReveal(holder.itemView)
+    }
+
+    /**
+     * Datos de la animación
+     * @param view Vista
+     */
+    private fun animatedCircularReveal(view: View) {
+        val centerX = 0
+        val centerY = 0
+        val startRadious = 0f
+        val endRadious: Float = max(view.width, view.height).toFloat()
+        val animation: Animator = ViewAnimationUtils.createCircularReveal(
+            view,
+            centerX,
+            centerY,
+            startRadious,
+            endRadious
+        )
+        animation.start()
+    }
+
 }
 
-// Interfase que habilita el click del recyclerview
-interface OnFarItemClickListner{
+/**
+ * Interface que habilita el click del recyclerview
+ */
+interface OnFarItemClickListner {
     fun onItemClick(item: MiFarmaco, position: Int)
 }

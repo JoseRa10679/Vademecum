@@ -20,8 +20,9 @@
         android:theme="?attr/actionBarTheme"
         android:visibility="visible"
         app:navigationIcon="@mipmap/ic_launcher_foreground"
-        app:title="Detalle Fármaco"
-        app:titleTextColor="@color/colorAccent" />
+        app:title="@string/strDetalleFarmaco"
+        app:titleTextColor="@color/colorAccent"
+        app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -41,7 +42,8 @@
                 android:layout_marginRight="@dimen/ocho_dp"
                 android:layout_marginBottom="@dimen/dieciseis_dp"
                 android:background="@drawable/back"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                >
 
                 <TextView
                     android:id="@+id/txtNombre"
@@ -86,9 +88,10 @@
                 android:layout_marginEnd="@dimen/ocho_dp"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:text="@string/princpios_activos"
+                android:text="@string/principios_activos"
                 android:textColor="@color/colorPrimary"
-                android:textSize="12sp" />
+                android:textSize="@dimen/catorce_sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtPactivos"
@@ -116,7 +119,8 @@
                 android:paddingEnd="8dp"
                 android:text="@string/excipientes"
                 android:textColor="@color/colorPrimary"
-                android:textSize="12sp" />
+                android:textSize="@dimen/catorce_sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtExcipientes"
@@ -213,7 +217,7 @@
                 android:background="@drawable/back"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:text="@string/presentaciones2"
+                android:text="@string/presentaciones"
                 android:textColor="@color/colorAzulTexto"
                 android:textSize="@dimen/doce_sp" />
 
@@ -251,6 +255,19 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@color/colorAzulTexto" />
+
+                <TextView
+                    android:id="@+id/txtFichaIndicaciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/ocho_dp"
+                    android:layout_marginTop="@dimen/ocho_dp"
+                    android:layout_marginEnd="@dimen/ocho_dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/indicaciones"
+                    android:textColor="@color/colorVerdeTexto"
+                    android:textSize="@dimen/catorce_sp" />
 
                 <TextView
                     android:id="@+id/txtFichaTPos"

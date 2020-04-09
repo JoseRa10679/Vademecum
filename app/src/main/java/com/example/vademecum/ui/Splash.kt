@@ -1,9 +1,9 @@
 package com.example.vademecum.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import com.example.vademecum.R
 
 /**
@@ -23,7 +23,7 @@ class Splash : AppCompatActivity() {
             startActivity(Intent(this@Splash, MainActivity::class.java))
             //finish this activity
             finish()
-        },2000)
+        }, 2000)
 
     }
 }
