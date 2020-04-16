@@ -42,8 +42,7 @@
                 android:layout_marginRight="@dimen/ocho_dp"
                 android:layout_marginBottom="@dimen/dieciseis_dp"
                 android:background="@drawable/back"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtNombre"
@@ -189,7 +188,6 @@
                     android:textSize="@dimen/doce_sp" />
 
             </LinearLayout>
-
 
 
             <TextView
@@ -350,7 +348,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/ocho_dp"
-                    android:layout_marginTop="@dimen/dieciseis_dp"
+                    android:layout_marginTop="@dimen/ocho_dp"
                     android:layout_marginEnd="@dimen/ocho_dp"
                     android:layout_marginBottom="@dimen/dieciseis_dp"
                     android:paddingStart="8dp"

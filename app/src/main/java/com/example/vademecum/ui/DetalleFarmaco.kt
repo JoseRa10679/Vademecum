@@ -2,24 +2,18 @@ package com.example.vademecum.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.vademecum.Adaptadores.ApiService
-import com.example.vademecum.Dataclass.*
+import com.example.vademecum.adaptadores.ApiService
+import com.example.vademecum.dataclass.*
 import com.example.vademecum.R
-import com.example.vademecum.objetos.*
-import com.example.vademecum.objetos.Comun.nMIFIRMA
-import com.example.vademecum.objetos.Comun.nVADEMECUM
+import com.example.vademecum.objetos.Comun
 import kotlinx.android.synthetic.main.activity_detalle_farmaco.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -63,7 +57,7 @@ class DetalleFarmaco : AppCompatActivity() {
     private val nRegistro: String by lazy { intent.getStringExtra(getString(R.string.regsitro)) }
 
     //</editor-folder>
-
+/*
     //<editor-folder desc = " Menu ">
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -100,16 +94,16 @@ class DetalleFarmaco : AppCompatActivity() {
     }
 
     //</editor-folder>
-
+*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalle_farmaco)
 
         val toolbar: Toolbar = findViewById(R.id.toolbarDetalle)
         setSupportActionBar(toolbar)
-
-        inicializa()
         compruebaConexionInternet(this)
+        inicializa()
+
 
         getFarmacoById(Comun.service, nRegistro)
 
@@ -432,7 +426,6 @@ class DetalleFarmaco : AppCompatActivity() {
     }
 
     //</editor-folder>
-
 
 }
 

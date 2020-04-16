@@ -2,7 +2,7 @@ package com.example.vademecum.objetos
 
 import android.content.Context
 import android.net.ConnectivityManager
-import com.example.vademecum.Adaptadores.ApiService
+import com.example.vademecum.adaptadores.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

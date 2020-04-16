@@ -1,10 +1,11 @@
-package com.example.vademecum.Dataclass
+package com.example.vademecum.dataclass
 
 import com.google.gson.annotations.SerializedName
 
 /**
- * @author José Ramón Laperal
- * Este objeto se usa solo para el layout DetalleFarmaco
+ *  Este objeto se usa solo para el layout DetalleFarmaco.
+ *  Captura los datos de salida del farmaco requerido
+ *  @author José Ramón Laperal
  */
 data class EsteFarmaco(
     @SerializedName("nregistro")

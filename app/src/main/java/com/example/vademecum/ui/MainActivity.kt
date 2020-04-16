@@ -20,15 +20,15 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.vademecum.Adaptadores.Adaptador
-import com.example.vademecum.Adaptadores.ApiService
-import com.example.vademecum.Adaptadores.OnFarItemClickListner
-import com.example.vademecum.Models.MainViewModel
 import com.example.vademecum.R
+import com.example.vademecum.adaptadores.Adaptador
+import com.example.vademecum.adaptadores.ApiService
+import com.example.vademecum.adaptadores.OnFarItemClickListner
+import com.example.vademecum.dataclass.MiFarmaco
+import com.example.vademecum.dataclass.MiObjeto
+import com.example.vademecum.models.MainViewModel
 import com.example.vademecum.objetos.CFecha
 import com.example.vademecum.objetos.Comun
-import com.example.vademecum.Dataclass.MiFarmaco
-import com.example.vademecum.Dataclass.MiObjeto
 import com.example.vademecum.objetos.Comun.nMIFIRMA
 import com.example.vademecum.objetos.Comun.nVADEMECUM
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
@@ -36,13 +36,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-//<editor-folder desc = " Constantes ">
-
-private val ATENCION: String by lazy{ "Atención" }
-private val PROGRAMA_PASADO:String by lazy{ "El programa está pasado de fecha.\nContacta con el programador."}
-private val ACEPTAR:String by lazy{ "Aceptar" }
-
-//</editor-folder>
 
 /**
  * @author Jose Ramón Laperal Mur
@@ -52,6 +45,7 @@ class MainActivity : AppCompatActivity(),
     OnFarItemClickListner {
 
     //<editor-folder desc = " Variables ">
+
     private lateinit var mButton: Button
     private lateinit var mEditText: EditText
     private lateinit var chkActivo: CheckBox
@@ -61,6 +55,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var miViewModel: MainViewModel
     private lateinit var recyclerFarmacos: RecyclerView
 
+    private var getNumPA: Int =0
+
 
     //</editor-folder>
 
@@ -68,35 +64,77 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
+
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.version) {
-            lateinit var version: String
-            var packageInfo: PackageInfo? = null
-            try {
-                packageInfo = packageManager.getPackageInfo(packageName, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-            if (packageInfo != null) version = packageInfo.versionName
-            val toast =
-                Toast.makeText(
-                    this@MainActivity,
-                    "$nVADEMECUM$version$nMIFIRMA",
-                    Toast.LENGTH_SHORT
-                )
-            toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-            toast.show()
-
-        } else {
-
-            val intent = Intent(this, Acercade::class.java)
-            startActivity(intent)
+    /*
+     *   Junto a invalidateOptionsMenu permite modificar los datos del menu
+     *
+     **/
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        when(getNumPA){
+            0 -> menu?.findItem(R.id.mnuTodosPA)?.isChecked = true
+            1 -> menu?.findItem(R.id.mnuUnPA)?.isChecked = true
+            2 -> menu?.findItem(R.id.mnuDosPA)?.isChecked = true
+            3 -> menu?.findItem(R.id.mnuMasDosPA)?.isChecked = true
         }
+        return super.onPrepareOptionsMenu(menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.version -> {
+                lateinit var version: String
+                var packageInfo: PackageInfo? = null
+                try {
+                    packageInfo = packageManager.getPackageInfo(packageName, 0)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    e.printStackTrace()
+                }
+                if (packageInfo != null) version = packageInfo.versionName
+                val toast =
+                    Toast.makeText(
+                        this@MainActivity,
+                        "$nVADEMECUM$version$nMIFIRMA",
+                        Toast.LENGTH_SHORT
+                    )
+                toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
+                toast.show()
+            }
+            R.id.action_settings ->{
+                val intent = Intent(this, Acercade::class.java)
+                startActivity(intent)
+            }
+
+            R.id.mnuTodosPA->{
+                item.isChecked = !item.isChecked
+                getNumPA =0
+                miViewModel.miMenu.value = getNumPA
+                return true
+            }
+            R.id.mnuUnPA->{
+                item.isChecked = !item.isChecked
+                getNumPA =1
+                miViewModel.miMenu.value = getNumPA
+                return true
+            }
+            R.id.mnuDosPA->{
+                item.isChecked = !item.isChecked
+                getNumPA =2
+                miViewModel.miMenu.value = getNumPA
+                return true
+            }
+            R.id.mnuMasDosPA->{
+                item.isChecked = !item.isChecked
+                getNumPA =3
+                miViewModel.miMenu.value = getNumPA
+                return true
+            }
+
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -109,24 +147,19 @@ class MainActivity : AppCompatActivity(),
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-        //<editor-folder desc = " Comprueba Fecha Limite ">
-
+        // Comprueba fecha límite
         if(CFecha.comprueba("01/01/2022")){
             val builder = AlertDialog.Builder(this)
-                .setTitle(ATENCION)
-                .setMessage(PROGRAMA_PASADO)
+                .setTitle(CFecha.ATENCION)
+                .setMessage(CFecha.PROGRAMA_PASADO)
                 .setIcon(R.mipmap.ic_launcher_foreground)
-                .setPositiveButton(ACEPTAR) { _, _ -> finish() }
+                .setPositiveButton(CFecha.ACEPTAR) { _, _ -> finish() }
             builder.create().show()
         }
-
-        //</editor-folder>
 
         compruebaConexionInternet(this)
 
         miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
 
         inicializa()
 
@@ -163,9 +196,19 @@ class MainActivity : AppCompatActivity(),
             if (Comun.hasNetworkAvailable(this)) {
                 val miS: String = mEditText.text.toString()
                 if (chkActivo.isChecked) {
-                    getPactivos(Comun.service, miS)
+                    when(getNumPA){
+                        0 -> getPactivos(Comun.service, miS)
+                        1 -> getPactivosUnPA(Comun.service, miS)
+                        2-> getPactivosDosPA(Comun.service, miS)
+                        else -> getPactivosMasDeDosPA(Comun.service, miS)
+                    }
                 } else {
-                    getMedicamentos(Comun.service, miS)
+                    when(getNumPA){
+                        0 -> getMedicamentos(Comun.service, miS)
+                        1 -> getMedicamentosUnPa(Comun.service, miS)
+                        2-> getMedicamentosDosPa(Comun.service, miS)
+                        else -> getMedicamentosMasDeDos(Comun.service, miS)
+                    }
                 }
             } else {
                 compruebaConexionInternet(this)
@@ -174,20 +217,27 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    /**
+     * Actualiza la pantalla con el ViewModel al volver a cargar la actividad
+     */
     override fun onResume() {
         super.onResume()
 
         //        Comprba que la caja de búsqueda no esté vacía para cargar el recyclerview
+
         if (mEditText.text.toString() != "") {
             getComun(miViewModel.miRecycle?.value)
         } else {
             getComun(null)
         }
+        getNumPA = miViewModel.miMenu.value?.toInt()?:0 // El operador Elvis me permite poner a 0 la variable si es null
         mEditText.requestFocus()
         UIUtil.showKeyboard(this, mEditText)
     }
 
     //<editor-folder desc = " Consultas ">
+
+    //<editor-folder desc = " GET Principios Activos ">
 
     /**
      * Función que filtra los fármcos por el Principio Activo
@@ -196,7 +246,7 @@ class MainActivity : AppCompatActivity(),
      */
     private fun getPactivos(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
-        ser.getPActivos(miS, 1).enqueue(object : Callback<MiObjeto> {
+        ser.getPActivos(miS).enqueue(object : Callback<MiObjeto> {
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
                 funcionListado(response)
             }
@@ -208,12 +258,14 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     * Función que filtra los fármcos por el Principio Activo
+     * Filtra un solo principio activo
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getMedicamentos(ser: ApiService, miS: String) {
-        ser.getMedicamentos(miS, 1).enqueue(object : Callback<MiObjeto> {
+    private fun getPactivosUnPA(ser: ApiService, miS: String) {
+        //        Filtra solo los comercializados
+        ser.getPactivosUnPA(miS).enqueue(object : Callback<MiObjeto> {
             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
                 funcionListado(response)
             }
@@ -223,6 +275,119 @@ class MainActivity : AppCompatActivity(),
             }
         })
     }
+
+    /**
+     * Función que filtra los fármcos por el Principio Activo
+     * Filtra un solo principio activo
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     */
+    private fun getPactivosDosPA(ser: ApiService, miS: String) {
+        //        Filtra solo los comercializados
+        ser.getPactivosDosPA(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * Función que filtra los fármcos por el Principio Activo
+     * Filtra más dos principios activos
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     */
+    private fun getPactivosMasDeDosPA(ser: ApiService, miS: String) {
+        //        Filtra solo los comercializados
+        ser.getPactivosTresPA(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    //</editor-folder>
+
+    //<editor-folder desc = " GET Medicamentos ">
+
+    /**
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     */
+    private fun getMedicamentos(ser: ApiService, miS: String) {
+        ser.getMedicamentos(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     * Filtra aquellos con solo un principio activo
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     *
+     */
+    private fun getMedicamentosUnPa(ser: ApiService, miS: String) {
+        ser.getMedicamentosUnPA(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     * Filtra aquellos con dos principios activo
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     *
+     */
+    private fun getMedicamentosDosPa(ser: ApiService, miS: String) {
+        ser.getMedicamentosDosPA(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    /**
+     * Función que filtra los fármcos por el nombre del mismo comercial o genérico
+     * Filtra aquellos con más de dos principios activos
+     * @author José Ramón Laperal Mur
+     * @param ser instancia del ApiServide de Retrofit
+     */
+    private fun getMedicamentosMasDeDos(ser: ApiService, miS: String) {
+        ser.getMedicamentosTresPA(miS).enqueue(object : Callback<MiObjeto> {
+            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                funcionListado(response)
+            }
+            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
+    //</editor-folder>
 
     /**
      * Llena el RecyclerView con los fármacos filtrados
@@ -243,6 +408,9 @@ class MainActivity : AppCompatActivity(),
             else -> miLista?.toMutableList()
         }
 
+
+        this.invalidateOptionsMenu()
+        getNumPA =0
 
         val layoutManager = LinearLayoutManager(this@MainActivity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -349,7 +517,9 @@ class MainActivity : AppCompatActivity(),
         if (res.isSuccessful) {
             with(miViewModel){
                 miRecycle?.value = res.body()
+                miMenu.value = getNumPA
                 val miValor: MiObjeto? = miRecycle?.value
+
                 getComun(miValor)
                 contador(miValor, applicationContext)
             }
@@ -368,6 +538,5 @@ class MainActivity : AppCompatActivity(),
         toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
         toast.show()
     }
-
 
 }

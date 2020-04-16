@@ -1,4 +1,4 @@
-package com.example.vademecum.Dataclass
+package com.example.vademecum.dataclass
 
 import com.google.gson.annotations.SerializedName
 

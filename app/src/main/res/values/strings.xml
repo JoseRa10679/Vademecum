@@ -8,7 +8,7 @@
 
     <!-- Acerca de.. -->
     <string name="descripcion">\tEsta aplicación nos permite acceder a la BD de la <a href="https://cima.aemps.es/cima/publico/home.html">Agencia Española del Medicamento.</a></string>
-    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\n\tSe puede ordenar por nombre y por laboratorio distribuidor\n\n\tHay que introducir tres letras para activar el botón de búsqueda.\n\n\tMuestra un máximo de 25 resultados por lo que hay que filtrar todo lo que se pueda.</string>
+    <string name="descripcion2">\tEn la primera pantalla podemos filtrar los fármacos por su nombre o por el principio activo.\n\n\tSe puede ordenar por nombre y por laboratorio distribuidor\n\n\tHay que introducir tres letras para activar el botón de búsqueda.\n\n\tMuestra un máximo de 100 resultados por lo que hay que filtrar todo lo que se pueda.\n\n\tSe puede filtrar por el número de Prncipios Activos en el menú de la parte superior de la pantalla</string>
     <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tProblemas de suministro\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto</string>
     <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
     <!-- Fin Acerca de.. -->
@@ -50,7 +50,11 @@
     <string name="strDetalleFarmaco">Detalle Fármaco</string>
     <string name="o_por_nombre">Nombre</string>
     <string name="o_por_laboratorio">Laboratorio</string>
-
+    <string name="un_principio_activo">Un P. Activo</string>
+    <string name="dos_principios_activos">Dos P. Activos</string>
+    <string name="tres_principios_activos">Tres P. Activos</string>
+    <string name="todos">Todos</string>
+    <string name="n_mero_de_p_activos">Número de P. Activos</string>
 
 
     <!-- Fin Detalle Fármaco-->

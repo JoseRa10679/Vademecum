@@ -1,4 +1,4 @@
-package com.example.vademecum.Adaptadores
+package com.example.vademecum.adaptadores
 
 import android.animation.Animator
 import android.content.Context
@@ -8,7 +8,7 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
-import com.example.vademecum.Dataclass.MiFarmaco
+import com.example.vademecum.dataclass.MiFarmaco
 import kotlinx.android.synthetic.main.item.view.*
 import kotlin.math.max
 
@@ -52,6 +52,8 @@ class Adaptador(
         }
     }
 
+    //<editor-folder desc = " Animación ">
+
     /**
      * Código para activar la animación
      * @param holder
@@ -79,6 +81,8 @@ class Adaptador(
         )
         animation.start()
     }
+
+    //</editor-folder>
 
 }
 

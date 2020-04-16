@@ -1,12 +1,12 @@
-package com.example.vademecum.Models
+package com.example.vademecum.models
 
 import android.content.Context
 import android.view.Gravity
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.vademecum.Dataclass.MiFarmaco
-import com.example.vademecum.Dataclass.MiObjeto
+import com.example.vademecum.dataclass.MiFarmaco
+import com.example.vademecum.dataclass.MiObjeto
 
 /**
  * @author José Ramón Laperal Mur
@@ -18,6 +18,9 @@ class MainViewModel : ViewModel() {
         MutableLiveData<MiObjeto>()
     }
 
+    val miMenu: MutableLiveData<Int> by lazy {
+        MutableLiveData<Int>()
+    }
 
     /**
      * Muestra un Toast con el número de items del total de entradas
@@ -34,7 +37,7 @@ class MainViewModel : ViewModel() {
         m.let {
             val toast: Toast = Toast.makeText(
                 context,
-                """${lista?.size.toString()} entradas de un total de ${m?.totalFilas}""",
+                """${lista?.count().toString()} entradas de un total de ${m?.totalFilas}""", // Mas eficiente usar conunt que size
                 Toast.LENGTH_SHORT
             )
             toast.setGravity(Gravity.TOP or Gravity.FILL_HORIZONTAL, 0, 0)
