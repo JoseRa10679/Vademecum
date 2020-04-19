@@ -157,7 +157,7 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:text="@string/prescripcion"
-                    android:textColor="@color/colorVerdeTexto"
+                    android:textColor="@color/colorCianTexto"
                     android:textSize="@dimen/doce_sp" />
 
                 <TextView
@@ -170,7 +170,7 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:text="@string/conducci_n"
-                    android:textColor="@color/colorVerdeTexto"
+                    android:textColor="@color/colorAzulTexto"
                     android:textSize="@dimen/doce_sp" />
 
                 <TextView

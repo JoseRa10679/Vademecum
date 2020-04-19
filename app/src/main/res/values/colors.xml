@@ -8,7 +8,8 @@
 
     <color name="colorTitulo">#820202</color>
     <color name="colorAzulTexto">#02217B</color>
-    <color name="colorVerdeTexto">#028C19</color>
+    <color name="colorCianTexto">#026D7B</color>
+    <color name="colorVerdeTexto">#028C3C</color>
 
 </resources>
 

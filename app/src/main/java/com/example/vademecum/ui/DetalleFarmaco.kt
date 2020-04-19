@@ -10,9 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.vademecum.R
 import com.example.vademecum.adaptadores.ApiService
 import com.example.vademecum.dataclass.*
-import com.example.vademecum.R
 import com.example.vademecum.objetos.Comun
 import kotlinx.android.synthetic.main.activity_detalle_farmaco.*
 import retrofit2.Call
@@ -27,6 +27,7 @@ import retrofit2.Response
 class DetalleFarmaco : AppCompatActivity() {
 
     private companion object {
+        const val SALTO = "\n"
         const val DOBLE_SALTO = "\n\n"
         const val RUTA = "https://cima.aemps.es/cima/dochtml/ft/"
         const val FICHA = "FichaTecnica.html"
@@ -57,6 +58,7 @@ class DetalleFarmaco : AppCompatActivity() {
     private val nRegistro: String by lazy { intent.getStringExtra(getString(R.string.regsitro)) }
 
     //</editor-folder>
+
 /*
     //<editor-folder desc = " Menu ">
 
@@ -104,7 +106,6 @@ class DetalleFarmaco : AppCompatActivity() {
         compruebaConexionInternet(this)
         inicializa()
 
-
         getFarmacoById(Comun.service, nRegistro)
 
     }
@@ -124,7 +125,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 } else {
                     val toast: Toast = Toast.makeText(
                         applicationContext,
-                        "No se ha podido cargar los datos",
+                        getString(R.string.no_cargar_datos),
                         Toast.LENGTH_LONG
                     )
                     toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
@@ -187,9 +188,15 @@ class DetalleFarmaco : AppCompatActivity() {
         pactivos.text = DOBLE_SALTO + miPAct
 
         val miPr: List<Presentacion>? = miM?.presentaciones
-        var miPresent = ""
+        var miPresent =  ""
         miPr?.forEach {
-            miPresent = miPresent + it.nombre + DOBLE_SALTO
+            val miPsuministro =  getString(R.string.hay_problemas_de_suministro)
+            miPresent = if(it.psum) {
+                miPresent + it.nombre + SALTO +  miPsuministro + DOBLE_SALTO
+            }else{
+                miPresent + it.nombre + DOBLE_SALTO
+            }
+
         }
         presentaciones.text = DOBLE_SALTO + miPresent
 

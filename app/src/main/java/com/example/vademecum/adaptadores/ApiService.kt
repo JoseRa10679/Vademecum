@@ -32,7 +32,6 @@ interface ApiService {
      *
      */
 
-
     @GET(value = "medicamentos?comerc=1&pagina=1&pagesize=100")
     fun getMedicamentos(
         @Query("nombre") nombre: String
@@ -78,8 +77,6 @@ interface ApiService {
         @Query("practiv1") practiv1: String
     ): Call<MiObjeto>
 
-
     //</editor-folder>
-
 
 }

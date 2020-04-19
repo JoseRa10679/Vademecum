@@ -6,5 +6,6 @@ package com.example.vademecum.dataclass
  */
 data class Presentacion(
     var nombre: String,
-    var comercializado: Boolean
+    var comercializado: Boolean,
+    var psum: Boolean
 )

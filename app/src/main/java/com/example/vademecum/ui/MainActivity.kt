@@ -181,14 +181,25 @@ class MainActivity : AppCompatActivity(),
             true
         }
 
+        //        Cambia el Hint del editTextBox al marcar el chkActivo
+        chkActivo.setOnClickListener{
+            if(chkActivo.isChecked){
+                mEditText.hint = getString(R.string.p_activo)
+            }else{
+                mEditText.hint = getString(R.string.nombre)
+            }
+        }
+
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
         chkOrdenNombre.setOnClickListener {
             if (chkOrdenNombre.isChecked) chkOrdenLaboratorio.isChecked = false
+
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
         chkOrdenLaboratorio.setOnClickListener {
             if (chkOrdenLaboratorio.isChecked) chkOrdenNombre.isChecked = false
+
         }
 
         //      Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
@@ -407,7 +418,6 @@ class MainActivity : AppCompatActivity(),
                 compareBy { it.labtitular })?.toMutableList()
             else -> miLista?.toMutableList()
         }
-
 
         this.invalidateOptionsMenu()
         getNumPA =0
