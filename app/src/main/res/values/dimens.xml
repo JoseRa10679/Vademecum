@@ -11,6 +11,5 @@
     <dimen name="treinta_sp">30sp</dimen>
     <dimen name="catorce_sp">14sp</dimen>
     <dimen name="dieciseis_sp">16sp</dimen>
-    <dimen name="cuarentaycinco_dp">45dp</dimen>
     <dimen name="quince_dp">15dp</dimen>
 </resources>

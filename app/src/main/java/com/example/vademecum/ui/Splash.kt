@@ -17,7 +17,6 @@ class Splash : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         //4second splash time
-
         Handler().postDelayed({
             //start main activity
             startActivity(Intent(this@Splash, MainActivity::class.java))

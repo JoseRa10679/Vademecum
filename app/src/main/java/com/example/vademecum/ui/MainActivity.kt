@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
@@ -31,6 +32,8 @@ import com.example.vademecum.objetos.CFecha
 import com.example.vademecum.objetos.Comun
 import com.example.vademecum.objetos.Comun.nMIFIRMA
 import com.example.vademecum.objetos.Comun.nVADEMECUM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import retrofit2.Call
 import retrofit2.Callback
@@ -424,12 +427,16 @@ class MainActivity : AppCompatActivity(),
 
         val layoutManager = LinearLayoutManager(this@MainActivity)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
+
         recyclerFarmacos.layoutManager = layoutManager
 
         val adapter = sortList?.let {
             Adaptador(this@MainActivity, it, this)
         }
+
         recyclerFarmacos.adapter = adapter
+        recyclerFarmacos.smoothScrollToPosition(miViewModel.miPosicion?.value?:0)
+
 
         UIUtil.hideKeyboard(this@MainActivity)
     }
@@ -443,9 +450,16 @@ class MainActivity : AppCompatActivity(),
      * @param position representa la posición en el RecyclerView
      */
     override fun onItemClick(item: MiFarmaco, position: Int) {
-        val intent = Intent(this, DetalleFarmaco::class.java)
-        intent.putExtra("REGISTRO", item.nregistro)
-        startActivity(intent)
+
+        miViewModel.miPosicion?.value = position
+
+        lifecycleScope.launch (Dispatchers.IO){
+            Intent(this@MainActivity, DetalleFarmaco::class.java).also {
+                it.putExtra("REGISTRO", item.nregistro)
+                startActivity(it)
+            }
+        }
+
     }
 
     /**

@@ -242,7 +242,8 @@
                     android:text="@string/ficha_tecnica"
                     android:textColor="@color/colorAzulTexto"
                     android:textSize="@dimen/catorce_sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
 
                 <View
                     android:id="@+id/lineaHorizontal"

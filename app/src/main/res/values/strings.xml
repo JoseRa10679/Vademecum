@@ -21,7 +21,7 @@
     <string name="prescripcion">Prescripcion</string>
     <string name="conducci_n">Conducción</string>
     <string name="presentaciones">Presentaciones</string>
-       <string name="ficha_tecnica">Ficha Tecnica completa</string>
+    <string name="ficha_tecnica">Ficha Tecnica completa</string>
     <string name="prospecto">Prospecto</string>
     <string name="problemas_de_suministro">Problemas de suministro</string>
     <string name="puede_afectar_cond">Puede afectar a la conducción</string>
@@ -30,7 +30,7 @@
     <string name="no_problemas_suministro" tools:ignore="Typos">No hay problemas de suministro en este momento</string>
     <string name="regsitro">REGISTRO</string>
     <string name="abrir_ficha_tecnica">Abrir Ficha Técnica completa…</string>
-    <string name="ft_no_accesible">Ficha Técnica no accesible</string>
+    <string name="ft_no_accesible"> \tFicha Técnica no accesible\t</string>
     <string name="abrir_prospecto">Abrir Prospecto…</string>
     <string name="salir">Salir</string>
     <string name="salir_aplicacion">No hay conexión an Internet.\nVa a salir de la aplicación.\n\nEl acceso a Intenet es necesario para conectar con la base de datos de la AEMS.</string>
@@ -41,7 +41,7 @@
     <string name="interacciones">\tInteracciones…</string>
     <string name="reacciones_adversas">\tReacciones Adversas…</string>
     <string name="fertilidad">\tFertilidad, embarazo y lactancia…</string>
-    <string name="proNoAccesible">Prospecto no accesible</string>
+    <string name="proNoAccesible">\tProspecto no accesible\t</string>
     <string name="sinConexion">Sin conexión a Internet</string>
     <string name="reintentar">Reintentar</string>
     <string name="strSi">Si</string>
@@ -57,7 +57,8 @@
     <string name="n_mero_de_p_activos">Número de P. Activos</string>
     <string name="hay_problemas_de_suministro">Hay problemas de suministro con esta presentación.</string>
     <string name="no_cargar_datos">No se ha podido cargar los datos</string>
-
-
+    <string name="no_listado_farmacos">No se ha podido descargar el listado de los fármacos</string>
     <!-- Fin Detalle Fármaco-->
+
+
 </resources>

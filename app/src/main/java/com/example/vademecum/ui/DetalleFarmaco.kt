@@ -336,6 +336,16 @@ class DetalleFarmaco : AppCompatActivity() {
             }
 
         }else{
+
+            fichaTecnica.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaTecnicaIndic.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaTecnicaPos.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaTecnicaCont.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaTecnicaInter.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaFertilidad.setTextColor(getColor(R.color.colorGrisTexto))
+            fichaTecnicaReac.setTextColor(getColor(R.color.colorGrisTexto))
+            miProspecto.setTextColor(getColor(R.color.colorGrisTexto))
+
             ftNoAccesible()
         }
 

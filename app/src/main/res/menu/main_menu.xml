@@ -9,14 +9,14 @@
         android:orderInCategory="2"
         app:showAsAction="never">
     </item>
+
     <item android:id="@+id/version"
         android:title="@string/versi_n"
         android:orderInCategory="1"
         app:showAsAction="never">
     </item>
 
-
-     <item android:id="@+id/mnuNumPA"
+    <item android:id="@+id/mnuNumPA"
          android:title="@string/n_mero_de_p_activos"
          android:visible="true"
          app:showAsAction="ifRoom"
@@ -40,8 +40,5 @@
                  </group>
              </menu>
      </item>
-
-
-
 
 </menu>

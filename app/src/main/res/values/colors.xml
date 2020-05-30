@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+<!--    Colores básicos de la aplicación-->
     <color name="colorPrimary">#d32f2f</color>
     <color name="colorPrimaryDark">#9a0007</color>
 
     <color name="colorAccent">#03DAC5</color>
 
+<!--    Colores del texto-->
 
     <color name="colorTitulo">#820202</color>
     <color name="colorAzulTexto">#02217B</color>
     <color name="colorCianTexto">#026D7B</color>
     <color name="colorVerdeTexto">#028C3C</color>
+    <color name="colorGrisTexto">#898989</color>
+
 
 </resources>
 

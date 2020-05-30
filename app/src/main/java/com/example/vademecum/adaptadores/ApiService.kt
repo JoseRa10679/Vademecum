@@ -12,15 +12,32 @@ import retrofit2.http.Query
  * Interfase que captura las consultas de Retrofit a la Api
  */
 interface ApiService {
+    companion object{
+
+        const val nom:String = "nombre"
+        const val prac: String = "practiv1"
+        const val nreg: String = "nregistro"
+
+        const val detalleF: String = "medicamento/nregistro/{nregistro}"
+
+        const val medicamentos: String = "medicamentos?comerc=1&pagina=1&pagesize=100"
+        const val medicamentosUnPA: String = "medicamentos?comerc=1&npactiv=1&pagina=1&pagesize=100"
+        const val medicamentosDosPA: String = "medicamentos?comerc=1&npactiv=2&pagina=1&pagesize=100"
+        const val medicamentosTresPA: String = "medicamentos?comerc=1&npactiv=3&pagina=1&pagesize=100"
+
+        const val pActivos: String = "medicamentos?comerc=1&pagina=1&pagesize=100"
+        const val pActivosUnPA: String = "medicamentos?comerc=1&npactiv=1&pagina=1&pagesize=100"
+        const val pActivosDosPA: String = "medicamentos?comerc=1&npactiv=2&pagina=1&pagesize=100"
+        const val pActivosTresPA: String = "medicamentos?comerc=1&npactiv=3&pagina=1&pagesize=100"
+    }
 
 
     //    Utilizamos @Path en lugar de @Query cuando accedemos a un solo registro
-    @GET("medicamento/nregistro/{nregistro}")
-    fun getDetalleFarmaco(@Path("nregistro") nregistro: String): Call<EsteFarmaco>
+    @GET(detalleF)
+    fun getDetalleFarmaco(@Path(nreg) nregistro: String): Call<EsteFarmaco>
 
-    /*
-    *   El filtrado por genérico o no se hace mediante un filtrado de la lista de salida
-    * */
+
+
 
     //<editor-folder desc = " Get Medicamentos">
 
@@ -32,51 +49,42 @@ interface ApiService {
      *
      */
 
-    @GET(value = "medicamentos?comerc=1&pagina=1&pagesize=100")
-    fun getMedicamentos(
-        @Query("nombre") nombre: String
-    ): Call<MiObjeto>
+    @GET(value = medicamentos)
+    fun getMedicamentos(@Query(nom) nombre: String): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=1&pagina=1&pagesize=100")
-    fun getMedicamentosUnPA(
-        @Query("nombre") nombre: String
-    ): Call<MiObjeto>
+    @GET(value = medicamentosUnPA)
+    fun getMedicamentosUnPA(@Query(nom) nombre: String): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=2&pagina=1&pagesize=100")
-    fun getMedicamentosDosPA(
-        @Query("nombre") nombre: String
-    ): Call<MiObjeto>
+    @GET(value = medicamentosDosPA)
+    fun getMedicamentosDosPA(@Query(nom) nombre: String): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=3&pagina=1&pagesize=100")
-    fun getMedicamentosTresPA(
-        @Query("nombre") nombre: String
-    ): Call<MiObjeto>
+    @GET(value = medicamentosTresPA)
+    fun getMedicamentosTresPA(@Query(nom) nombre: String): Call<MiObjeto>
 
     //</editor-folder>
 
     //<editor-folder desc = " Get Principio Activo ">
 
-    //    Filtramos por principio activo y usaremos solo los que estan comercializados.
-    @GET(value = "medicamentos?comerc=1&pagina=1&pagesize=100")
-    fun getPActivos(
-        @Query("practiv1") practiv1: String
-    ): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=1&pagina=1&pagesize=100")
-    fun getPactivosUnPA(
-        @Query("practiv1") practiv1: String
-    ): Call<MiObjeto>
+    /*
+    *
+    *     Filtramos por principio activo y usaremos solo los que estan comercializados.
+    *     Filtra la primera página con un tamaño de 100 registros
+    *
+    * */
+    @GET(value = pActivos)
+    fun getPActivos(@Query(prac) practiv1: String): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=2&pagina=1&pagesize=100")
-    fun getPactivosDosPA(
-        @Query("practiv1") practiv1: String
-    ): Call<MiObjeto>
+    @GET(value = pActivosUnPA)
+    fun getPactivosUnPA(@Query(prac) practiv1: String): Call<MiObjeto>
 
-    @GET(value = "medicamentos?comerc=1&npactiv=3&pagina=1&pagesize=100")
-    fun getPactivosTresPA(
-        @Query("practiv1") practiv1: String
-    ): Call<MiObjeto>
+    @GET(value = pActivosDosPA)
+    fun getPactivosDosPA(@Query(prac) practiv1: String): Call<MiObjeto>
+
+    @GET(value = pActivosTresPA)
+    fun getPactivosTresPA(@Query(prac) practiv1: String): Call<MiObjeto>
 
     //</editor-folder>
+
 
 }
