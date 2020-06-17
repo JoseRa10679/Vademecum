@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="IconLauncherShape">
+        <ignore path="src/main/res/mipmap-hdpi/ic_launcher.png" />
+        <ignore path="src/main/res/mipmap-mdpi/ic_launcher.png" />
+        <ignore path="src/main/res/mipmap-xhdpi/ic_launcher.png" />
+        <ignore path="src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+        <ignore path="src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
+    </issue>
+    <issue id="IconXmlAndPng">
+        <ignore path="src/main/res/drawable-hdpi/ic_stat_name.png" />
+        <ignore path="src/main/res/drawable-mdpi/ic_stat_name.png" />
+        <ignore path="src/main/res/drawable-xhdpi/ic_stat_name.png" />
+        <ignore path="src/main/res/drawable-xxhdpi/ic_stat_name.png" />
+        <ignore path="src/main/res/mipmap-hdpi/ic_launcher_foreground.png" />
+        <ignore path="src/main/res/mipmap-mdpi/ic_launcher_foreground.png" />
+        <ignore path="src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" />
+        <ignore path="src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" />
+        <ignore path="src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
+    </issue>
+</lint>
