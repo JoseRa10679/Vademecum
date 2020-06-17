@@ -10,9 +10,7 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +18,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
 import com.example.vademecum.adaptadores.Adaptador
 import com.example.vademecum.adaptadores.ApiService
@@ -32,7 +29,9 @@ import com.example.vademecum.objetos.CFecha
 import com.example.vademecum.objetos.Comun
 import com.example.vademecum.objetos.Comun.nMIFIRMA
 import com.example.vademecum.objetos.Comun.nVADEMECUM
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import retrofit2.Call
@@ -49,14 +48,7 @@ class MainActivity : AppCompatActivity(),
 
     //<editor-folder desc = " Variables ">
 
-    private lateinit var mButton: Button
-    private lateinit var mEditText: EditText
-    private lateinit var chkActivo: CheckBox
-    private lateinit var chkOrdenNombre: CheckBox
-    private lateinit var chkOrdenLaboratorio: CheckBox
-
     private lateinit var miViewModel: MainViewModel
-    private lateinit var recyclerFarmacos: RecyclerView
 
     private var getNumPA: Int =0
 
@@ -98,14 +90,15 @@ class MainActivity : AppCompatActivity(),
                     e.printStackTrace()
                 }
                 if (packageInfo != null) version = packageInfo.versionName
-                val toast =
                     Toast.makeText(
                         this@MainActivity,
                         "$nVADEMECUM$version$nMIFIRMA",
                         Toast.LENGTH_SHORT
-                    )
-                toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-                toast.show()
+                    ).apply {
+                        setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
+                        show()
+                    }
+
             }
             R.id.action_settings ->{
                 val intent = Intent(this, Acercade::class.java)
@@ -115,25 +108,25 @@ class MainActivity : AppCompatActivity(),
             R.id.mnuTodosPA->{
                 item.isChecked = !item.isChecked
                 getNumPA =0
-                miViewModel.miMenu.value = getNumPA
+                miViewModel.miMenu?.value = getNumPA
                 return true
             }
             R.id.mnuUnPA->{
                 item.isChecked = !item.isChecked
                 getNumPA =1
-                miViewModel.miMenu.value = getNumPA
+                miViewModel.miMenu?.value = getNumPA
                 return true
             }
             R.id.mnuDosPA->{
                 item.isChecked = !item.isChecked
                 getNumPA =2
-                miViewModel.miMenu.value = getNumPA
+                miViewModel.miMenu?.value = getNumPA
                 return true
             }
             R.id.mnuMasDosPA->{
                 item.isChecked = !item.isChecked
                 getNumPA =3
-                miViewModel.miMenu.value = getNumPA
+                miViewModel.miMenu?.value = getNumPA
                 return true
             }
 
@@ -148,7 +141,8 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+            setSupportActionBar(toolbar)
+
 
         // Comprueba fecha límite
         if(CFecha.comprueba("01/01/2022")){
@@ -162,35 +156,40 @@ class MainActivity : AppCompatActivity(),
 
         compruebaConexionInternet(this)
 
+
         miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         inicializa()
 
         //      Se activa el botón cuando el número de letras es mayor a 2
-        mEditText.addTextChangedListener(object : TextWatcher {
+        txtBuscar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                mButton.isEnabled = mEditText.text.length > 2
+                botonBuscar.isEnabled = txtBuscar.text.length > 2
             }
 
         })
 
         //      Borra el contenido del EditTexBox y limpia el RecyclerView
-        mEditText.setOnLongClickListener {
-            mEditText.text.clear()
+        txtBuscar.setOnLongClickListener {
+            txtBuscar.text.clear()
+            this.invalidateOptionsMenu()
+            getNumPA = 0
+            miViewModel.miMenu?.value = getNumPA
             getComun(null)
-            UIUtil.showKeyboard(this, mEditText)
+            UIUtil.showKeyboard(this, txtBuscar)
             true
         }
 
         //        Cambia el Hint del editTextBox al marcar el chkActivo
-        chkActivo.setOnClickListener{
-            if(chkActivo.isChecked){
-                mEditText.hint = getString(R.string.p_activo)
+        chkPActivo.setOnClickListener{
+            txtBuscar.hint = if(chkPActivo.isChecked){
+                getString(R.string.p_activo)
             }else{
-                mEditText.hint = getString(R.string.nombre)
+                getString(R.string.nombre)
             }
+
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
@@ -206,10 +205,15 @@ class MainActivity : AppCompatActivity(),
         }
 
         //      Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
-        mButton.setOnClickListener {
+        botonBuscar.setOnClickListener {
             if (Comun.hasNetworkAvailable(this)) {
-                val miS: String = mEditText.text.toString()
-                if (chkActivo.isChecked) {
+
+                lifecycleScope.launch(Dispatchers.Main) {
+                    progressBar0.visibility = View.VISIBLE
+                }
+
+                val miS: String = txtBuscar.text.toString()
+                if (chkPActivo.isChecked) {
                     when(getNumPA){
                         0 -> getPactivos(Comun.service, miS)
                         1 -> getPactivosUnPA(Comun.service, miS)
@@ -229,6 +233,7 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+
     }
 
     /**
@@ -239,14 +244,16 @@ class MainActivity : AppCompatActivity(),
 
         //        Comprba que la caja de búsqueda no esté vacía para cargar el recyclerview
 
-        if (mEditText.text.toString() != "") {
+        txtBuscar.text?.toString()?.let{
             getComun(miViewModel.miRecycle?.value)
-        } else {
+        } ?: run{
             getComun(null)
         }
-        getNumPA = miViewModel.miMenu.value?.toInt()?:0 // El operador Elvis me permite poner a 0 la variable si es null
-        mEditText.requestFocus()
-        UIUtil.showKeyboard(this, mEditText)
+
+
+        getNumPA = miViewModel.miMenu?.value?.toInt()?:0 // El operador Elvis me permite poner a 0 la variable si es null
+        txtBuscar.requestFocus()
+        UIUtil.showKeyboard(this, txtBuscar)
     }
 
     //<editor-folder desc = " Consultas ">
@@ -422,22 +429,20 @@ class MainActivity : AppCompatActivity(),
             else -> miLista?.toMutableList()
         }
 
-        this.invalidateOptionsMenu()
-        getNumPA =0
 
-        val layoutManager = LinearLayoutManager(this@MainActivity)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-
-        recyclerFarmacos.layoutManager = layoutManager
-
-        val adapter = sortList?.let {
-            Adaptador(this@MainActivity, it, this)
+        val layoutManager = LinearLayoutManager(this@MainActivity).also {
+            it.orientation = LinearLayoutManager.VERTICAL
         }
 
-        recyclerFarmacos.adapter = adapter
-        recyclerFarmacos.smoothScrollToPosition(miViewModel.miPosicion?.value?:0)
-
-
+        recyclerId.run{
+            this.layoutManager = layoutManager
+            val adapter = sortList?.let {
+                Adaptador(this@MainActivity, it, this@MainActivity)
+            }
+            this.adapter = adapter
+            smoothScrollToPosition(miViewModel.miPosicion?.value?:0)
+        }
+        
         UIUtil.hideKeyboard(this@MainActivity)
     }
 
@@ -454,9 +459,9 @@ class MainActivity : AppCompatActivity(),
         miViewModel.miPosicion?.value = position
 
         lifecycleScope.launch (Dispatchers.IO){
-            Intent(this@MainActivity, DetalleFarmaco::class.java).also {
-                it.putExtra("REGISTRO", item.nregistro)
-                startActivity(it)
+            Intent(this@MainActivity, DetalleFarmaco::class.java).apply{
+                putExtra("REGISTRO", item.nregistro)
+                startActivity(this)
             }
         }
 
@@ -466,18 +471,14 @@ class MainActivity : AppCompatActivity(),
      * Inicializa los controles
      */
     private fun inicializa() {
-        mButton = findViewById(R.id.botonBuscar)
-        mEditText = findViewById(R.id.txtBuscar)
-        mEditText.requestFocus()
+        txtBuscar.requestFocus()
 
 //      Convierte todas las entradas en mayúsculas
-        mEditText.filters += InputFilter.AllCaps()
+        txtBuscar.filters += InputFilter.AllCaps()
 
-        chkActivo = findViewById(R.id.chkPActivo)
-        chkOrdenNombre = findViewById(R.id.chkOrdenNombre)
-        chkOrdenLaboratorio = findViewById(R.id.chkOrdenLaboratorio)
+        this.invalidateOptionsMenu()
+        getNumPA =0
 
-        recyclerFarmacos = findViewById(R.id.recyclerId)
     }
 
     //<editor-folder desc = " Conexión a Internet ">
@@ -497,7 +498,6 @@ class MainActivity : AppCompatActivity(),
                 }
                 .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
             builder.create().show()
-
         }
     }
 
@@ -521,13 +521,8 @@ class MainActivity : AppCompatActivity(),
                     .setMessage(R.string.salir_aplicacion)
                     .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
                     .setNegativeButton(R.string.strComprobar) { _, _ ->
-                        miComprobacion(
-                            n + 1,
-                            activity
-                        )
-                    }
-            }
-                .create().show()
+                        miComprobacion(n + 1, activity)}
+            }.create().show()
         }
     }
 
@@ -538,29 +533,43 @@ class MainActivity : AppCompatActivity(),
      * @param res Respuesta de Retrofit
      */
     private fun funcionListado(res: Response<MiObjeto>) {
-        if (res.isSuccessful) {
-            with(miViewModel){
-                miRecycle?.value = res.body()
-                miMenu.value = getNumPA
-                val miValor: MiObjeto? = miRecycle?.value
 
-                getComun(miValor)
-                contador(miValor, applicationContext)
+        lifecycleScope.launch (Dispatchers.Main){
+
+
+            delay(1000L)
+            if (res.isSuccessful) {
+                with(miViewModel){
+                    miRecycle?.value = res.body()
+                    miMenu?.value = getNumPA
+                    val miValor: MiObjeto? = miRecycle?.value
+                    getComun(miValor)
+
+                    launch {
+                        contador(miValor, applicationContext)
+                        progressBar0.visibility = View.GONE
+                    }
+                    
+                }
+            } else {
+                errorToastListado()
             }
-        } else {
-            errorToastListado()
+
         }
+
     }
 
     //    Toast que avisa del error en la ejecución de la consulta.
     private fun errorToastListado() {
-        val toast: Toast = Toast.makeText(
+        Toast.makeText(
             applicationContext,
             "No se ha podido el listado de fármacoslos datos",
             Toast.LENGTH_LONG
-        )
-        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
-        toast.show()
+        ).apply{
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
+            show()
+        }
+
     }
 
 }

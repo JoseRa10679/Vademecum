@@ -24,9 +24,19 @@
         app:titleTextColor="@color/colorAccent"
         app:titleTextAppearance="@style/Toolbar.TitleText"/>
 
-    <ScrollView
+    <ProgressBar
+        android:id="@+id/progressBar0"
+        style="@android:style/Widget.Material.ProgressBar.Large"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="100dp"
+        android:visibility="visible" />
+
+    <ScrollView
+        android:id="@+id/mScroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/detalle_id"
@@ -42,7 +52,8 @@
                 android:layout_marginRight="@dimen/ocho_dp"
                 android:layout_marginBottom="@dimen/dieciseis_dp"
                 android:background="@drawable/back"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:visibility="visible">
 
                 <TextView
                     android:id="@+id/txtNombre"

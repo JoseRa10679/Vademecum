@@ -1,6 +1,5 @@
 package com.example.vademecum.adaptadores
 
-import android.animation.Animator
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,7 @@ class Adaptador(
     }
 
     override fun getItemCount(): Int {
-        return miLista.size
+        return miLista.count()
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -72,14 +71,14 @@ class Adaptador(
         val centerY = 0
         val startRadious = 0f
         val endRadious: Float = max(view.width, view.height).toFloat()
-        val animation: Animator = ViewAnimationUtils.createCircularReveal(
+        ViewAnimationUtils.createCircularReveal(
             view,
             centerX,
             centerY,
             startRadious,
             endRadious
-        )
-        animation.start()
+        ).start()
+
     }
 
     //</editor-folder>

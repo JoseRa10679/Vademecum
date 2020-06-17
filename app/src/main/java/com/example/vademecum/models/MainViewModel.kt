@@ -18,7 +18,7 @@ class MainViewModel : ViewModel() {
 
     val miRecycle: MutableLiveData<MiObjeto>? by lazy { MutableLiveData<MiObjeto>() }
     val miPosicion: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
-    val miMenu: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
+    val miMenu: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
 
     /**
      * Muestra un Toast con el número de items del total de entradas
@@ -32,20 +32,23 @@ class MainViewModel : ViewModel() {
         * Es mejora que hacer un if(!=null) porque controla el acceso desde otros hilos
         * */
         m.let {
-            val toast: Toast = Toast.makeText(
+            Toast.makeText(
                 context,
                 """  ${it?.resultados?.count().toString()} entradas de un total de ${it?.totalFilas}  """, // Mas eficiente usar count que size
                 Toast.LENGTH_SHORT
-            )
-            toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
-            val toastView: View = toast.view
-            toastView.setBackgroundColor(
-                ContextCompat.getColor(
-                    toastView.context,
-                    R.color.colorAccent
+            ).apply {
+                setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
+                val toastView: View = view
+                toastView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        toastView.context,
+                        R.color.colorAccent
+                    )
                 )
-            )
-            toast.show()
+                show()
+            }
+
+
 
         }
     }

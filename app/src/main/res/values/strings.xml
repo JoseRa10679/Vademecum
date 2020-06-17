@@ -1,8 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Vademecum</string>
-    <string name="ok">OK</string>
     <string name="aceptar">Aceptar</string>
-    <string name="p_activo">P. Activo</string>
     <string name="acerca_de">Acerca de..</string>
     <string name="versi_n">Versión</string>
 
@@ -12,6 +10,18 @@
     <string name="descripcion3">\tLa pantalla de detalle nos muestra:\n\t\tNombre del fármaco.\n\t\tLaboratorio fabricante\n\t\tPrincipio activo\n\t\tTipo de receta\n\t\tSi afecta a la conducción\n\t\tProblemas de suministro\n\t\tPresentaciones\n\t\tVínculos para ficha técnica y prospecto</string>
     <string name="descripcion4">\t* Para limpiar la pantalla de búsqueda solo hay que mantener el dedo pulsado en la caja de texto.</string>
     <!-- Fin Acerca de.. -->
+
+    <!-- Main -->
+    <string name="ok">OK</string>
+    <string name="p_activo">P. Activo</string>
+    <string name="o_por_nombre">Nombre</string>
+    <string name="o_por_laboratorio">Laboratorio</string>
+    <string name="un_principio_activo">Un P. Activo</string>
+    <string name="dos_principios_activos">Dos P. Activos</string>
+    <string name="tres_principios_activos">Tres P. Activos</string>
+    <string name="todos">Todos</string>
+    <string name="n_mero_de_p_activos">Número de P. Activos</string>
+    <!-- Fin Main -->
 
     <!-- Detalle Fármaco-->
     <string name="principios_activos">Principios Activos</string>
@@ -48,13 +58,6 @@
     <string name="strNo">No</string>
     <string name="strComprobar">Comprobar de nuevo</string>
     <string name="strDetalleFarmaco">Detalle Fármaco</string>
-    <string name="o_por_nombre">Nombre</string>
-    <string name="o_por_laboratorio">Laboratorio</string>
-    <string name="un_principio_activo">Un P. Activo</string>
-    <string name="dos_principios_activos">Dos P. Activos</string>
-    <string name="tres_principios_activos">Tres P. Activos</string>
-    <string name="todos">Todos</string>
-    <string name="n_mero_de_p_activos">Número de P. Activos</string>
     <string name="hay_problemas_de_suministro">Hay problemas de suministro con esta presentación.</string>
     <string name="no_cargar_datos">No se ha podido cargar los datos</string>
     <string name="no_listado_farmacos">No se ha podido descargar el listado de los fármacos</string>
