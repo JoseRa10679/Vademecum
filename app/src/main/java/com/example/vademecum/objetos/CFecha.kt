@@ -1,8 +1,12 @@
 package com.example.vademecum.objetos
 
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
+import com.example.vademecum.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.system.exitProcess
 
 /**
  * Verifica la fecha actual en cualquier programa con la fecha que límite que pongamos
@@ -11,9 +15,9 @@ import java.util.*
 object CFecha {
     //<editor-folder desc = " Constantes para el AlertDialog">
 
-    val ATENCION: String by lazy{ "Atención" }
-    val PROGRAMA_PASADO:String by lazy{ "El programa está pasado de fecha.\nContacta con el programador."}
-    val ACEPTAR:String by lazy{ "Aceptar" }
+    private val ATENCION: String by lazy{ "Atención" }
+    private val PROGRAMA_PASADO:String by lazy{ "El programa está pasado de fecha.\nContacta con el programador."}
+    private val ACEPTAR:String by lazy{ "Aceptar" }
 
     //</editor-folder>
 
@@ -31,6 +35,15 @@ object CFecha {
         }
 
         return today.after(mifecha)
+    }
+
+    fun alertaMSG(contexto: Context){
+        val builder = AlertDialog.Builder(contexto)
+            .setTitle(ATENCION)
+            .setMessage(PROGRAMA_PASADO)
+            .setIcon(R.mipmap.ic_launcher_foreground)
+            .setPositiveButton(ACEPTAR) { _, _ -> exitProcess(-1)} // exitProcess(-1) sustituya a finish() en el hilo principal
+        builder.create().show()
     }
 
 }

@@ -60,7 +60,6 @@
     <string name="strDetalleFarmaco">Detalle Fármaco</string>
     <string name="hay_problemas_de_suministro">Hay problemas de suministro con esta presentación.</string>
     <string name="no_cargar_datos">No se ha podido cargar los datos</string>
-    <string name="no_listado_farmacos">No se ha podido descargar el listado de los fármacos</string>
     <!-- Fin Detalle Fármaco-->
 
 

@@ -20,6 +20,7 @@ class MainViewModel : ViewModel() {
     val miPosicion: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
     val miMenu: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
 
+
     /**
      * Muestra un Toast con el número de items del total de entradas
      * @param m Objeto que muestra los resultados de la consulta
@@ -27,32 +28,30 @@ class MainViewModel : ViewModel() {
      */
     fun contador(m: MiObjeto?, context: Context) {
 
-        /*
-        * El comando Let ejecuta el código entre corchetes solo si el valor de m no es null.
-        * Es mejora que hacer un if(!=null) porque controla el acceso desde otros hilos
-        * */
-        m.let {
-            Toast.makeText(
-                context,
-                """  ${it?.resultados?.count().toString()} entradas de un total de ${it?.totalFilas}  """, // Mas eficiente usar count que size
-                Toast.LENGTH_SHORT
-            ).apply {
-                setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
-                val toastView: View = view
-                toastView.setBackgroundColor(
-                    ContextCompat.getColor(
-                        toastView.context,
-                        R.color.colorAccent
+        /**
+         * El comando Let ejecuta el código entre corchetes solo si el valor de m no es null.
+         * Es mejora que hacer un if(!=null) porque controla el acceso desde otros hilos
+         */
+            m.let {
+                Toast.makeText(
+                    context,
+                    """  ${
+                        it?.resultados?.count().toString()
+                    } entradas de un total de ${it?.totalFilas}  """, // Mas eficiente usar count que size
+                    Toast.LENGTH_SHORT
+                ).apply {
+                    setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 0)
+                    val toastView: View = view
+                    toastView.setBackgroundColor(
+                        ContextCompat.getColor(
+                            toastView.context,
+                            R.color.colorAccent
+                        )
                     )
-                )
-                show()
+                    show()
+                }
             }
 
-
-
-        }
     }
-
-
 
 }

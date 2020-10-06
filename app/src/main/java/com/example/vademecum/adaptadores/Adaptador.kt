@@ -45,7 +45,7 @@ class Adaptador(
                 itemLaboratorio.text = f.labtitular
 
                 setOnClickListener {
-                    action.onItemClick(f, adapterPosition)
+                    action.onItemClick(f, absoluteAdapterPosition)
                 }
             }
         }

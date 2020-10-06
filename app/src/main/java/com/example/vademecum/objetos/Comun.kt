@@ -39,7 +39,7 @@ object Comun {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    var service: ApiService = retrofit.create(ApiService::class.java)
+    val service: ApiService = retrofit.create(ApiService::class.java)
 
 
 

@@ -48,7 +48,9 @@ class MainActivity : AppCompatActivity(),
 
     //<editor-folder desc = " Variables ">
 
-    private lateinit var miViewModel: MainViewModel
+    private val miViewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
 
     private var getNumPA: Int =0
 
@@ -89,6 +91,7 @@ class MainActivity : AppCompatActivity(),
                 } catch (e: PackageManager.NameNotFoundException) {
                     e.printStackTrace()
                 }
+
                 if (packageInfo != null) version = packageInfo.versionName
                     Toast.makeText(
                         this@MainActivity,
@@ -146,27 +149,35 @@ class MainActivity : AppCompatActivity(),
 
         // Comprueba fecha límite
         if(CFecha.comprueba("01/01/2022")){
-            val builder = AlertDialog.Builder(this)
-                .setTitle(CFecha.ATENCION)
-                .setMessage(CFecha.PROGRAMA_PASADO)
-                .setIcon(R.mipmap.ic_launcher_foreground)
-                .setPositiveButton(CFecha.ACEPTAR) { _, _ -> finish() }
-            builder.create().show()
+            CFecha.alertaMSG(this)
         }
 
         compruebaConexionInternet(this)
 
+        miViewModel.miMenu?.observe(this,{
+            getNumPA = miViewModel.miMenu?.value?.toInt()?:0
+        })
 
-        miViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+
+        miViewModel.miRecycle?.observe(this,{
+           txtBuscar.text?.toString()?.let{
+               getComun(miViewModel.miRecycle?.value)
+           } ?: run{
+               getComun(null)
+           }
+        })
 
         inicializa()
 
+
         //      Se activa el botón cuando el número de letras es mayor a 2
         txtBuscar.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) { }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 botonBuscar.isEnabled = txtBuscar.text.length > 2
+
             }
 
         })
@@ -177,6 +188,7 @@ class MainActivity : AppCompatActivity(),
             this.invalidateOptionsMenu()
             getNumPA = 0
             miViewModel.miMenu?.value = getNumPA
+            miViewModel.miRecycle?.value = null
             getComun(null)
             UIUtil.showKeyboard(this, txtBuscar)
             true
@@ -208,31 +220,42 @@ class MainActivity : AppCompatActivity(),
         botonBuscar.setOnClickListener {
             if (Comun.hasNetworkAvailable(this)) {
 
+                /**
+                 * Utilizo una Corutina en el hilo principal para visualizar la
+                 * progressBarr sin que bloquee la aplicación
+                 */
                 lifecycleScope.launch(Dispatchers.Main) {
                     progressBar0.visibility = View.VISIBLE
                 }
 
-                val miS: String = txtBuscar.text.toString()
-                if (chkPActivo.isChecked) {
-                    when(getNumPA){
-                        0 -> getPactivos(Comun.service, miS)
-                        1 -> getPactivosUnPA(Comun.service, miS)
-                        2-> getPactivosDosPA(Comun.service, miS)
-                        else -> getPactivosMasDeDosPA(Comun.service, miS)
-                    }
-                } else {
-                    when(getNumPA){
-                        0 -> getMedicamentos(Comun.service, miS)
-                        1 -> getMedicamentosUnPa(Comun.service, miS)
-                        2-> getMedicamentosDosPa(Comun.service, miS)
-                        else -> getMedicamentosMasDeDos(Comun.service, miS)
+                /**
+                 * Utilizo una Corutina en el hilo IO para hacer la consulta a la base de datos online
+                 * y que, no bloquee el hilo principal
+                 */
+
+                lifecycleScope.launch(Dispatchers.IO){
+                    val miS: String = txtBuscar.text.toString()
+                    if (chkPActivo.isChecked) {
+                        when(getNumPA){
+                            0 -> getPactivos(Comun.service, miS)
+                            1 -> getPactivosUnPA(Comun.service, miS)
+                            2-> getPactivosDosPA(Comun.service, miS)
+                            else -> getPactivosMasDeDosPA(Comun.service, miS)
+                        }
+                    } else {
+                        when(getNumPA){
+                            0 -> getMedicamentos(Comun.service, miS)
+                            1 -> getMedicamentosUnPa(Comun.service, miS)
+                            2-> getMedicamentosDosPa(Comun.service, miS)
+                            else -> getMedicamentosMasDeDos(Comun.service, miS)
+                        }
                     }
                 }
+
             } else {
                 compruebaConexionInternet(this)
             }
         }
-
 
     }
 
@@ -241,17 +264,7 @@ class MainActivity : AppCompatActivity(),
      */
     override fun onResume() {
         super.onResume()
-
-        //        Comprba que la caja de búsqueda no esté vacía para cargar el recyclerview
-
-        txtBuscar.text?.toString()?.let{
-            getComun(miViewModel.miRecycle?.value)
-        } ?: run{
-            getComun(null)
-        }
-
-
-        getNumPA = miViewModel.miMenu?.value?.toInt()?:0 // El operador Elvis me permite poner a 0 la variable si es null
+        
         txtBuscar.requestFocus()
         UIUtil.showKeyboard(this, txtBuscar)
     }
@@ -429,7 +442,6 @@ class MainActivity : AppCompatActivity(),
             else -> miLista?.toMutableList()
         }
 
-
         val layoutManager = LinearLayoutManager(this@MainActivity).also {
             it.orientation = LinearLayoutManager.VERTICAL
         }
@@ -439,10 +451,11 @@ class MainActivity : AppCompatActivity(),
             val adapter = sortList?.let {
                 Adaptador(this@MainActivity, it, this@MainActivity)
             }
+
             this.adapter = adapter
             smoothScrollToPosition(miViewModel.miPosicion?.value?:0)
         }
-        
+
         UIUtil.hideKeyboard(this@MainActivity)
     }
 
@@ -458,7 +471,7 @@ class MainActivity : AppCompatActivity(),
 
         miViewModel.miPosicion?.value = position
 
-        lifecycleScope.launch (Dispatchers.IO){
+        lifecycleScope.launch(Dispatchers.Main){
             Intent(this@MainActivity, DetalleFarmaco::class.java).apply{
                 putExtra("REGISTRO", item.nregistro)
                 startActivity(this)
@@ -536,7 +549,6 @@ class MainActivity : AppCompatActivity(),
 
         lifecycleScope.launch (Dispatchers.Main){
 
-
             delay(1000L)
             if (res.isSuccessful) {
                 with(miViewModel){
@@ -545,7 +557,7 @@ class MainActivity : AppCompatActivity(),
                     val miValor: MiObjeto? = miRecycle?.value
                     getComun(miValor)
 
-                    launch {
+                    lifecycleScope.launch(Dispatchers.Main){
                         contador(miValor, applicationContext)
                         progressBar0.visibility = View.GONE
                     }

@@ -33,13 +33,11 @@
         android:visibility="visible" />
 
     <ScrollView
-        android:id="@+id/mScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
 
         <LinearLayout
-            android:id="@+id/detalle_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -90,7 +88,6 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/txtTituloPactivos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/ocho_dp"
@@ -119,7 +116,6 @@
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/txtTituloExcipientes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/ocho_dp"
@@ -202,7 +198,6 @@
 
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/ocho_dp"
@@ -257,7 +252,6 @@
                     android:visibility="visible" />
 
                 <View
-                    android:id="@+id/lineaHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="8dp"
@@ -345,7 +339,6 @@
                     android:textSize="@dimen/catorce_sp" />
 
                 <View
-                    android:id="@+id/lineaHorizontal2"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="8dp"

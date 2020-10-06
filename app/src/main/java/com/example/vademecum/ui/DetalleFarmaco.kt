@@ -203,7 +203,6 @@ class DetalleFarmaco : AppCompatActivity() {
 
         val misDocs: List<Docs>? = miM?.docs
 
-
         if (!misDocs!!.isNullOrEmpty()) {
             val fTecnica :String? = misDocs[0].urlHtml
             val prospecto:String? = if (misDocs.size > 1) {misDocs[1].urlHtml} else {null}

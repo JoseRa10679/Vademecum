@@ -16,14 +16,14 @@
         app:showAsAction="never">
     </item>
 
-    <item android:id="@+id/mnuNumPA"
-         android:title="@string/n_mero_de_p_activos"
+    <item
+        android:title="@string/n_mero_de_p_activos"
          android:visible="true"
          app:showAsAction="ifRoom"
          android:orderInCategory="1"
          android:icon="@drawable/ic_filter_list_black_24dp">
              <menu>
-                 <group android:checkableBehavior="single" android:visible="true" android:id="@+id/groupPActivos">
+                 <group android:checkableBehavior="single" android:visible="true">
                      <item android:id="@+id/mnuTodosPA"
                          android:checked="true"
                          app:showAsAction="ifRoom"
