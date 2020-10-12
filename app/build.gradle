@@ -29,6 +29,8 @@ android {
         sourceCompatibility = "8"
     }
 
+    //    Activa el viewBinding
+    android.buildFeatures.viewBinding = true
 }
 
 dependencies {

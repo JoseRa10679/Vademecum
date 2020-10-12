@@ -12,9 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +21,7 @@ import com.example.vademecum.R
 import com.example.vademecum.adaptadores.Adaptador
 import com.example.vademecum.adaptadores.ApiService
 import com.example.vademecum.adaptadores.OnFarItemClickListner
+import com.example.vademecum.databinding.ActivityMainBinding
 import com.example.vademecum.dataclass.MiFarmaco
 import com.example.vademecum.dataclass.MiObjeto
 import com.example.vademecum.models.MainViewModel
@@ -34,8 +34,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 
@@ -47,6 +45,10 @@ class MainActivity : AppCompatActivity(),
     OnFarItemClickListner {
 
     //<editor-folder desc = " Variables ">
+
+    private val binding by lazy{
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private val miViewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -141,10 +143,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-            setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
 
         // Comprueba fecha límite
@@ -152,17 +153,23 @@ class MainActivity : AppCompatActivity(),
             CFecha.alertaMSG(this)
         }
 
-        compruebaConexionInternet(this)
+
+        Comun.compruebaConexionInternet(this)
+
 
         miViewModel.miMenu?.observe(this,{
-            getNumPA = miViewModel.miMenu?.value?.toInt()?:0
+            getNumPA = it?:0
+//            getNumPA = miViewModel.miMenu?.value?.toInt()?:0
         })
 
-
+        miViewModel.textoBHint.observe(this, {
+            binding.txtBuscar.hint = it
+        })
 
         miViewModel.miRecycle?.observe(this,{
-           txtBuscar.text?.toString()?.let{
-               getComun(miViewModel.miRecycle?.value)
+            val miObjeto: MiObjeto? = it
+            binding.txtBuscar.text?.toString()?.let{
+               getComun(miObjeto)
            } ?: run{
                getComun(null)
            }
@@ -172,19 +179,19 @@ class MainActivity : AppCompatActivity(),
 
 
         //      Se activa el botón cuando el número de letras es mayor a 2
-        txtBuscar.addTextChangedListener(object : TextWatcher {
+        binding.txtBuscar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) { }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                botonBuscar.isEnabled = txtBuscar.text.length > 2
+                binding.botonBuscar.isEnabled = binding.txtBuscar.text.length > 2
 
             }
 
         })
 
         //      Borra el contenido del EditTexBox y limpia el RecyclerView
-        txtBuscar.setOnLongClickListener {
-            txtBuscar.text.clear()
+        binding.txtBuscar.setOnLongClickListener {
+            binding.txtBuscar.text.clear()
             this.invalidateOptionsMenu()
             getNumPA = 0
             miViewModel.miMenu?.value = getNumPA
@@ -195,8 +202,8 @@ class MainActivity : AppCompatActivity(),
         }
 
         //        Cambia el Hint del editTextBox al marcar el chkActivo
-        chkPActivo.setOnClickListener{
-            txtBuscar.hint = if(chkPActivo.isChecked){
+        binding.chkPActivo.setOnClickListener{
+            miViewModel.textoBHint.value = if(binding.chkPActivo.isChecked){
                 getString(R.string.p_activo)
             }else{
                 getString(R.string.nombre)
@@ -205,14 +212,14 @@ class MainActivity : AppCompatActivity(),
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
-        chkOrdenNombre.setOnClickListener {
-            if (chkOrdenNombre.isChecked) chkOrdenLaboratorio.isChecked = false
+        binding.chkOrdenNombre.setOnClickListener {
+            if (binding.chkOrdenNombre.isChecked) binding.chkOrdenLaboratorio.isChecked = false
 
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
-        chkOrdenLaboratorio.setOnClickListener {
-            if (chkOrdenLaboratorio.isChecked) chkOrdenNombre.isChecked = false
+        binding.chkOrdenLaboratorio.setOnClickListener {
+            if (binding.chkOrdenLaboratorio.isChecked) binding.chkOrdenNombre.isChecked = false
 
         }
 
@@ -225,7 +232,7 @@ class MainActivity : AppCompatActivity(),
                  * progressBarr sin que bloquee la aplicación
                  */
                 lifecycleScope.launch(Dispatchers.Main) {
-                    progressBar0.visibility = View.VISIBLE
+                    binding.progressBar0.visibility = View.VISIBLE
                 }
 
                 /**
@@ -234,8 +241,8 @@ class MainActivity : AppCompatActivity(),
                  */
 
                 lifecycleScope.launch(Dispatchers.IO){
-                    val miS: String = txtBuscar.text.toString()
-                    if (chkPActivo.isChecked) {
+                    val miS: String = binding.txtBuscar.text.toString()
+                    if (binding.chkPActivo.isChecked) {
                         when(getNumPA){
                             0 -> getPactivos(Comun.service, miS)
                             1 -> getPactivosUnPA(Comun.service, miS)
@@ -253,7 +260,7 @@ class MainActivity : AppCompatActivity(),
                 }
 
             } else {
-                compruebaConexionInternet(this)
+                Comun.compruebaConexionInternet(this)
             }
         }
 
@@ -264,9 +271,9 @@ class MainActivity : AppCompatActivity(),
      */
     override fun onResume() {
         super.onResume()
-        
-        txtBuscar.requestFocus()
-        UIUtil.showKeyboard(this, txtBuscar)
+
+        binding.txtBuscar.requestFocus()
+        UIUtil.showKeyboard(this, binding.txtBuscar)
     }
 
     //<editor-folder desc = " Consultas ">
@@ -278,6 +285,19 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
+    private fun getPactivos(ser: ApiService, miS: String){
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getPActivos(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
+            }
+        }
+    }
+
+
+   /* ********** SIN CORUTINAS ****************
     private fun getPactivos(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
         ser.getPActivos(miS).enqueue(object : Callback<MiObjeto> {
@@ -289,7 +309,7 @@ class MainActivity : AppCompatActivity(),
                 t.printStackTrace()
             }
         })
-    }
+    }*/
 
     /**
      * Función que filtra los fármcos por el Principio Activo
@@ -297,18 +317,19 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getPactivosUnPA(ser: ApiService, miS: String) {
-        //        Filtra solo los comercializados
-        ser.getPactivosUnPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
-            }
 
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
+    private fun getPactivosUnPA(ser: ApiService, miS: String){
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getPactivosUnPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-        })
+        }
     }
+
+
 
     /**
      * Función que filtra los fármcos por el Principio Activo
@@ -318,16 +339,17 @@ class MainActivity : AppCompatActivity(),
      */
     private fun getPactivosDosPA(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
-        ser.getPactivosDosPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val respuesta = ser.getPactivosDosPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        }
     }
+
+
 
     /**
      * Función que filtra los fármcos por el Principio Activo
@@ -337,16 +359,17 @@ class MainActivity : AppCompatActivity(),
      */
     private fun getPactivosMasDeDosPA(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
-        ser.getPactivosTresPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val respuesta = ser.getPactivosTresPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        }
     }
+
+
 
     //</editor-folder>
 
@@ -358,15 +381,17 @@ class MainActivity : AppCompatActivity(),
      * @param ser instancia del ApiServide de Retrofit
      */
     private fun getMedicamentos(ser: ApiService, miS: String) {
-        ser.getMedicamentos(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getMedicamentos(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        }
     }
+
+
 
     /**
      * Función que filtra los fármcos por el nombre del mismo comercial o genérico
@@ -376,15 +401,17 @@ class MainActivity : AppCompatActivity(),
      *
      */
     private fun getMedicamentosUnPa(ser: ApiService, miS: String) {
-        ser.getMedicamentosUnPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getMedicamentosUnPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        }
     }
+
+
 
     /**
      * Función que filtra los fármcos por el nombre del mismo comercial o genérico
@@ -394,15 +421,17 @@ class MainActivity : AppCompatActivity(),
      *
      */
     private fun getMedicamentosDosPa(ser: ApiService, miS: String) {
-        ser.getMedicamentosDosPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getMedicamentosDosPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+
+        }
     }
+
 
     /**
      * Función que filtra los fármcos por el nombre del mismo comercial o genérico
@@ -411,15 +440,17 @@ class MainActivity : AppCompatActivity(),
      * @param ser instancia del ApiServide de Retrofit
      */
     private fun getMedicamentosMasDeDos(ser: ApiService, miS: String) {
-        ser.getMedicamentosTresPA(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getMedicamentosTresPA(miS)
+            if (respuesta.isSuccessful){
+                funcionListado(respuesta)
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        }
+
     }
+
 
     //</editor-folder>
 
@@ -435,9 +466,9 @@ class MainActivity : AppCompatActivity(),
         val sortList: MutableList<MiFarmaco>?
 
         sortList = when {
-            chkOrdenNombre.isChecked && !chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
+            binding.chkOrdenNombre.isChecked && !binding.chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
                 compareBy { it.nombre })?.toMutableList()
-            !chkOrdenNombre.isChecked && chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
+            !binding.chkOrdenNombre.isChecked && binding.chkOrdenLaboratorio.isChecked -> miLista?.sortedWith(
                 compareBy { it.labtitular })?.toMutableList()
             else -> miLista?.toMutableList()
         }
@@ -446,7 +477,7 @@ class MainActivity : AppCompatActivity(),
             it.orientation = LinearLayoutManager.VERTICAL
         }
 
-        recyclerId.run{
+        binding.recyclerId.run{
             this.layoutManager = layoutManager
             val adapter = sortList?.let {
                 Adaptador(this@MainActivity, it, this@MainActivity)
@@ -468,78 +499,34 @@ class MainActivity : AppCompatActivity(),
      * @param position representa la posición en el RecyclerView
      */
     override fun onItemClick(item: MiFarmaco, position: Int) {
+        if(Comun.hasNetworkAvailable(this)){
+            miViewModel.miPosicion?.value = position
 
-        miViewModel.miPosicion?.value = position
-
-        lifecycleScope.launch(Dispatchers.Main){
-            Intent(this@MainActivity, DetalleFarmaco::class.java).apply{
-                putExtra("REGISTRO", item.nregistro)
-                startActivity(this)
+            lifecycleScope.launch(Dispatchers.Main){
+                Intent(this@MainActivity, DetalleFarmaco::class.java).apply{
+                    putExtra("REGISTRO", item.nregistro)
+                    startActivity(this)
+                }
             }
+        }else{
+            errorSinConexion()
         }
-
     }
 
     /**
      * Inicializa los controles
      */
     private fun inicializa() {
-        txtBuscar.requestFocus()
+        binding.txtBuscar.requestFocus()
 
 //      Convierte todas las entradas en mayúsculas
-        txtBuscar.filters += InputFilter.AllCaps()
+        binding.txtBuscar.filters += InputFilter.AllCaps()
 
         this.invalidateOptionsMenu()
         getNumPA =0
 
     }
 
-    //<editor-folder desc = " Conexión a Internet ">
-
-    /**
-     * Comprueba la conexión a Internet y permite reintentar la conexión antes del diálogo de
-     * salir de la aplicación
-     * @param activity Actividad a la que se aplica
-     */
-    private fun compruebaConexionInternet(activity: MainActivity) {
-        if (!Comun.hasNetworkAvailable(activity)) {
-            val builder = AlertDialog.Builder(activity)
-                .setTitle(R.string.sinConexion)
-                .setMessage(R.string.reintentar)
-                .setPositiveButton(R.string.strSi) { _, _ ->
-                    miComprobacion(0, activity)
-                }
-                .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
-            builder.create().show()
-        }
-    }
-
-    /**
-     * Permite inintentar la conexión hasta 3 veces
-     * @param n número de veces que se repite el bucle
-     * @param activity Actividad a la que se aplica
-     */
-    private fun miComprobacion(n: Int, activity: MainActivity) {
-        if (!Comun.hasNetworkAvailable(activity)) {
-            val builder = AlertDialog.Builder(activity)
-            if (n > 2) {
-                builder
-                    .setTitle(R.string.salir)
-                    .setMessage(R.string.salir_aplicacion)
-                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
-
-            } else {
-                builder
-                    .setTitle(R.string.salir)
-                    .setMessage(R.string.salir_aplicacion)
-                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
-                    .setNegativeButton(R.string.strComprobar) { _, _ ->
-                        miComprobacion(n + 1, activity)}
-            }.create().show()
-        }
-    }
-
-    //</editor-folder>
 
     /**
      * Ejecuta el código según la respuesta de Retofit
@@ -584,4 +571,23 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    //    Toast que avisa de falta de conexión a Internet
+    private fun errorSinConexion() {
+        Toast.makeText(
+            applicationContext,
+            "No hay conexión a Internet",
+            Toast.LENGTH_LONG
+        ).apply{
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
+            val toastView: View = view
+            toastView.setBackgroundColor(
+                ContextCompat.getColor(
+                    toastView.context,
+                    R.color.colorAccent
+                )
+            )
+            show()
+        }
+
+    }
 }

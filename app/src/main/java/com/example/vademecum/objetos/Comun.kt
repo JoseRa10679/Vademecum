@@ -2,7 +2,12 @@ package com.example.vademecum.objetos
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.view.Gravity
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.example.vademecum.R
 import com.example.vademecum.adaptadores.ApiService
+import com.example.vademecum.ui.MainActivity
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -16,6 +21,53 @@ object Comun {
     val nMIFIRMA: String by lazy { "\n@Josera. Marzo 2020" }
 
     private const val uRL: String = "https://cima.aemps.es/cima/rest/"
+
+
+    //<editor-folder desc = "Conexión a Internet"
+
+    /**
+     * Comprueba la conexión a Internet y permite reintentar la conexión antes del diálogo de
+     * salir de la aplicación
+     * @param activity Actividad a la que se aplica
+     */
+    fun compruebaConexionInternet(activity: MainActivity) {
+        if (!hasNetworkAvailable(activity)) {
+            val builder = AlertDialog.Builder(activity)
+                .setTitle(R.string.sinConexion)
+                .setMessage(R.string.reintentar)
+                .setPositiveButton(R.string.strSi) { _, _ ->
+                    miComprobacion(0, activity)
+                }
+                .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
+            builder.create().show()
+        }
+    }
+
+    /**
+     * Permite inintentar la conexión hasta 3 veces
+     * @param n número de veces que se repite el bucle
+     * @param activity Actividad a la que se aplica
+     */
+    private fun miComprobacion(n: Int, activity: MainActivity) {
+        if (!hasNetworkAvailable(activity)) {
+            val builder = AlertDialog.Builder(activity)
+            if (n > 2) {
+                builder
+                    .setTitle(R.string.salir)
+                    .setMessage(R.string.salir_aplicacion)
+                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
+
+            } else {
+                builder
+                    .setTitle(R.string.salir)
+                    .setMessage(R.string.salir_aplicacion)
+                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
+                    .setNegativeButton(R.string.strComprobar) { _, _ ->
+                        miComprobacion(n + 1, activity)}
+            }.create().show()
+        }
+    }
+
 
     /**
      *  Comprueba si Internet está accesible
@@ -31,6 +83,7 @@ object Comun {
         return (network != null)
     }
 
+    //</editor-folder>
 
     //<editor-folder desc = " Retrofit ">
 
@@ -40,6 +93,18 @@ object Comun {
         .build()
 
     val service: ApiService = retrofit.create(ApiService::class.java)
+
+
+    fun noSePuedenCargarDatos(context: Context, mensaje: String){
+        Toast.makeText(context, mensaje,
+            Toast.LENGTH_LONG
+        ).apply {
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
+            show()
+        }
+    }
+
+
 
 
 

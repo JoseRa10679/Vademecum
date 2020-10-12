@@ -7,21 +7,16 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.example.vademecum.R
 import com.example.vademecum.adaptadores.ApiService
+import com.example.vademecum.databinding.ActivityDetalleFarmacoBinding
 import com.example.vademecum.dataclass.*
 import com.example.vademecum.objetos.Comun
-import kotlinx.android.synthetic.main.activity_detalle_farmaco.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 /**
  * @author José Ramón Laperal Mur
@@ -39,55 +34,21 @@ class DetalleFarmaco : AppCompatActivity() {
 
     //<editor-folder desc = " Variables ">
 
+    private val binding by lazy {
+        ActivityDetalleFarmacoBinding.inflate(layoutInflater)
+    }
+
     private val nRegistro: String by lazy { intent.getStringExtra(getString(R.string.regsitro)) }
 
     //</editor-folder>
 
-/*
-    //<editor-folder desc = " Menu ">
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.version) {
-            lateinit var version: String
-            var packageInfo: PackageInfo? = null
-            try {
-                packageInfo = packageManager.getPackageInfo(packageName, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-            if (packageInfo != null) version = packageInfo.versionName
-            val toast =
-                Toast.makeText(
-                    this,
-                    "$nVADEMECUM$version\n$nMIFIRMA",
-                    Toast.LENGTH_SHORT
-                )
-            toast.setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-            toast.show()
-        } else {
-
-            val intent = Intent(this, Acercade::class.java)
-            startActivity(intent)
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    //</editor-folder>
-*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detalle_farmaco)
+        setContentView(binding.root)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbarDetalle)
-        setSupportActionBar(toolbar)
-        compruebaConexionInternet(this)
+        //val toolbar: Toolbar = findViewById(R.id.toolbarDetalle)
+        setSupportActionBar(binding.toolbarDetalle)
 
         getFarmacoById(Comun.service, nRegistro)
 
@@ -99,37 +60,28 @@ class DetalleFarmaco : AppCompatActivity() {
      * @param reg número de registro del fármco en cuestión
      */
     private fun getFarmacoById(ser: ApiService, reg: String) {
-        ser.getDetalleFarmaco(reg).enqueue((object : Callback<EsteFarmaco>{
-            override fun onResponse(call: Call<EsteFarmaco>, response: Response<EsteFarmaco>) {
-                if (response.isSuccessful) {
-                    val miMS: EsteFarmaco? = response.body()
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        launch {
-                            llenaFormulario(miMS, reg)
-                        }
 
-                        launch {
-                            delay(1000L)
-                            progressBar0.visibility = View.GONE
-                        }
-                    }
-                } else {
-                    Toast.makeText(
-                        applicationContext,
-                        getString(R.string.no_cargar_datos),
-                        Toast.LENGTH_LONG
-                    ).apply {
-                        setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
-                        show()
-                    }
+        lifecycleScope.launch(Dispatchers.IO){
+            val respuesta = ser.getDetalleFarmaco(reg)
+            if(respuesta.isSuccessful){
+                val miMS: EsteFarmaco? = respuesta.body()
+                lifecycleScope.launch(Dispatchers.Main) {
+                    llenaFormulario(miMS, reg)
+                    delay(300L)
+                    llamaProgresion()
                 }
+            }else{
+                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
             }
+        }
 
-            override fun onFailure(call: Call<EsteFarmaco>, t: Throwable) {
-                t.printStackTrace()
-            }
-        }))
+    }
 
+    /**
+     * Finaliza el ProgressBarr
+     */
+    private fun llamaProgresion() {
+        binding.progressBar0.visibility = View.GONE
     }
 
     //<editor-folder desc = " Toast ">
@@ -170,16 +122,16 @@ class DetalleFarmaco : AppCompatActivity() {
      */
     @SuppressLint("SetTextI18n")
     private fun llenaFormulario(miM: EsteFarmaco?, reg: String) {
-        txtNombre.text = miM?.nombre
-        txtLaboratorio.text = miM?.labtitular
-        txtCpresc.text = miM?.cpresc
+        binding.txtNombre.text = miM?.nombre
+        binding.txtLaboratorio.text = miM?.labtitular
+        binding.txtCpresc.text = miM?.cpresc
 
         val miPa: List<PActivos>? = miM?.pactivos
         var miPAct = String()
         miPa?.forEach {
             miPAct = miPAct + it.nombre + " " + it.cantidad + " " + it.unidad + DOBLE_SALTO
         }
-        txtPactivos.text = DOBLE_SALTO + miPAct
+        binding.txtPactivos.text = DOBLE_SALTO + miPAct
 
         val miPr: List<Presentacion>? = miM?.presentaciones
         var miPresent =  String()
@@ -192,14 +144,14 @@ class DetalleFarmaco : AppCompatActivity() {
             }
 
         }
-        txtPresentaciones.text = DOBLE_SALTO + miPresent
+        binding.txtPresentaciones.text = DOBLE_SALTO + miPresent
 
         val miE: List<Excipiente>? = miM?.excipientes
         var miExcip = String()
         miE?.forEach {
             miExcip = miExcip + it.nombre + " " + it.cantidad + " " + it.unidad + DOBLE_SALTO
         }
-        txtExcipientes.text = DOBLE_SALTO + miExcip
+        binding.txtExcipientes.text = DOBLE_SALTO + miExcip
 
         val misDocs: List<Docs>? = miM?.docs
 
@@ -207,7 +159,7 @@ class DetalleFarmaco : AppCompatActivity() {
             val fTecnica :String? = misDocs[0].urlHtml
             val prospecto:String? = if (misDocs.size > 1) {misDocs[1].urlHtml} else {null}
 
-            with(txtFichaT){
+            with(binding.txtFichaT){
                 text = getString(R.string.abrir_ficha_tecnica)
                 setOnClickListener {
                     fTecnica?.let{
@@ -221,7 +173,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaIndicaciones){
+            with(binding.txtFichaIndicaciones){
                 text = getString(R.string.indicaciones)
                 setOnClickListener{
                     fTecnica?.let{
@@ -237,7 +189,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaTPos){
+            with(binding.txtFichaTPos){
                 text = getString(R.string.posolog_a)
                 setOnClickListener {
                     fTecnica?.let{
@@ -253,7 +205,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaContra){
+            with(binding.txtFichaContra){
                 text = getString(R.string.contraindicaciones)
                 setOnClickListener {
                     fTecnica?.let{
@@ -269,7 +221,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaInterac){
+            with(binding.txtFichaInterac){
                 text = getString(R.string.interacciones)
                 setOnClickListener {
                     fTecnica?.let{
@@ -285,7 +237,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaFertilidad){
+            with(binding.txtFichaFertilidad){
                 text = getString(R.string.fertilidad)
                 setOnClickListener {
                     fTecnica?.let{
@@ -302,7 +254,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with(txtFichaReacciones){
+            with(binding.txtFichaReacciones){
                 text = getString(R.string.reacciones_adversas)
                 setOnClickListener {
                     fTecnica?.let{
@@ -318,7 +270,7 @@ class DetalleFarmaco : AppCompatActivity() {
                 }
             }
 
-            with (txtProxpecto){
+            with (binding.txtProxpecto){
                 text = getString(R.string.abrir_prospecto)
                 setOnClickListener{
                     prospecto?.let{
@@ -335,84 +287,34 @@ class DetalleFarmaco : AppCompatActivity() {
 
         }else{
 
-            txtFichaT.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaIndicaciones.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaTPos.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaContra.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaInterac.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaFertilidad.setTextColor(getColor(R.color.colorGrisTexto))
-            txtFichaReacciones.setTextColor(getColor(R.color.colorGrisTexto))
-            txtProxpecto.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaT.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaIndicaciones.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaTPos.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaContra.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaInterac.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaFertilidad.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtFichaReacciones.setTextColor(getColor(R.color.colorGrisTexto))
+            binding.txtProxpecto.setTextColor(getColor(R.color.colorGrisTexto))
 
             ftNoAccesible()
         }
 
-        txtConduccion.text = if (miM.conduc) {
+        binding.txtConduccion.text = if (miM.conduc) {
             getString(R.string.puede_afectar_cond)
         } else {
             getString(R.string.no_afecta_conduc)
         }
 
         if (miM.psum) {
-            with(txtPsum){
+            with(binding.txtPsum){
                 text = getString(R.string.hay_problemas_suminstro)
                 setTextColor(getColor(R.color.colorPrimaryDark))
             }
         } else {
-            txtPsum.text = getString(R.string.no_problemas_suministro)
+            binding.txtPsum.text = getString(R.string.no_problemas_suministro)
         }
 
     }
-
-
-    //<editor-folder desc = " Conexión a Internet ">
-
-
-    /**
-     * Comprueba la conexión a Internet y permite reintentar la conexión antes del diálogo de
-     * salir de la aplicación
-     */
-    private fun compruebaConexionInternet(activity: DetalleFarmaco) {
-        if (!Comun.hasNetworkAvailable(activity)) {
-            val builder = AlertDialog.Builder(activity)
-                .setTitle(R.string.sinConexion)
-                .setMessage(R.string.reintentar)
-                .setPositiveButton(R.string.strSi) { _, _ ->
-                    miComprobacion(0, activity)
-                }
-                .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
-            builder.create().show()
-
-        }
-    }
-
-    /**
-     * Permite inintentar la conexión hasta 3 veces
-     * @param n número de veces que se repite el bucle
-     * @param activity Actividad a la que se aplica
-     */
-    private fun miComprobacion(n: Int, activity: DetalleFarmaco) {
-        if (!Comun.hasNetworkAvailable(activity)) {
-            val builder = AlertDialog.Builder(activity)
-            if (n > 2) {
-                builder
-                    .setTitle(R.string.salir)
-                    .setMessage(R.string.salir_aplicacion)
-                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
-            } else {
-                builder
-                    .setTitle(R.string.salir)
-                    .setMessage(R.string.salir_aplicacion)
-                    .setPositiveButton(R.string.salir) { _, _ -> activity.finish() }
-                    .setNegativeButton(R.string.strComprobar) { _, _ ->
-                        miComprobacion(n + 1, activity)}}
-                .create().show()
-        } else {
-            getFarmacoById(Comun.service, nRegistro)
-        }
-    }
-
-    //</editor-folder>
 
 }
 

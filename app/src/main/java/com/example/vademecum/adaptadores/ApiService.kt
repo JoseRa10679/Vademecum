@@ -2,7 +2,7 @@ package com.example.vademecum.adaptadores
 
 import com.example.vademecum.dataclass.EsteFarmaco
 import com.example.vademecum.dataclass.MiObjeto
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -34,7 +34,7 @@ interface ApiService {
 
     //    Utilizamos @Path en lugar de @Query cuando accedemos a un solo registro
     @GET(detalleF)
-    fun getDetalleFarmaco(@Path(nreg) nregistro: String): Call<EsteFarmaco>
+    suspend fun getDetalleFarmaco(@Path(nreg) nregistro: String): Response<EsteFarmaco>
 
 
 
@@ -50,16 +50,16 @@ interface ApiService {
      */
 
     @GET(value = medicamentos)
-    fun getMedicamentos(@Query(nom) nombre: String): Call<MiObjeto>
+    suspend fun getMedicamentos(@Query(nom) nombre: String): Response<MiObjeto>
 
     @GET(value = medicamentosUnPA)
-    fun getMedicamentosUnPA(@Query(nom) nombre: String): Call<MiObjeto>
+    suspend fun getMedicamentosUnPA(@Query(nom) nombre: String): Response<MiObjeto>
 
     @GET(value = medicamentosDosPA)
-    fun getMedicamentosDosPA(@Query(nom) nombre: String): Call<MiObjeto>
+    suspend fun getMedicamentosDosPA(@Query(nom) nombre: String): Response<MiObjeto>
 
     @GET(value = medicamentosTresPA)
-    fun getMedicamentosTresPA(@Query(nom) nombre: String): Call<MiObjeto>
+    suspend fun getMedicamentosTresPA(@Query(nom) nombre: String): Response<MiObjeto>
 
     //</editor-folder>
 
@@ -73,16 +73,16 @@ interface ApiService {
     *
     * */
     @GET(value = pActivos)
-    fun getPActivos(@Query(prac) practiv1: String): Call<MiObjeto>
+    suspend fun getPActivos(@Query(prac) practiv1: String): Response<MiObjeto>
 
     @GET(value = pActivosUnPA)
-    fun getPactivosUnPA(@Query(prac) practiv1: String): Call<MiObjeto>
+    suspend fun getPactivosUnPA(@Query(prac) practiv1: String): Response<MiObjeto>
 
     @GET(value = pActivosDosPA)
-    fun getPactivosDosPA(@Query(prac) practiv1: String): Call<MiObjeto>
+    suspend fun getPactivosDosPA(@Query(prac) practiv1: String): Response<MiObjeto>
 
     @GET(value = pActivosTresPA)
-    fun getPactivosTresPA(@Query(prac) practiv1: String): Call<MiObjeto>
+    suspend fun getPactivosTresPA(@Query(prac) practiv1: String): Response<MiObjeto>
 
     //</editor-folder>
 

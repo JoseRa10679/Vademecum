@@ -20,6 +20,8 @@ class MainViewModel : ViewModel() {
     val miPosicion: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
     val miMenu: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
 
+    val textoBHint: MutableLiveData<String> by lazy { MutableLiveData<String>()}
+
 
     /**
      * Muestra un Toast con el número de items del total de entradas
