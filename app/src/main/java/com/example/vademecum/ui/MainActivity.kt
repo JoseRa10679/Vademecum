@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity(),
                 }
 
             } else {
-                Comun.compruebaConexionInternet(this)
+                errorSinConexion()
             }
         }
 
