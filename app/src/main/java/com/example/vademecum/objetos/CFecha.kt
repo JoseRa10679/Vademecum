@@ -38,12 +38,14 @@ object CFecha {
     }
 
     fun alertaMSG(contexto: Context){
-        val builder = AlertDialog.Builder(contexto)
+
+        AlertDialog.Builder(contexto)
             .setTitle(ATENCION)
             .setMessage(PROGRAMA_PASADO)
             .setIcon(R.mipmap.ic_launcher_foreground)
-            .setPositiveButton(ACEPTAR) { _, _ -> exitProcess(-1)} // exitProcess(-1) sustituya a finish() en el hilo principal
-        builder.create().show()
+            .setPositiveButton(ACEPTAR) { _,_ -> exitProcess(-1) } // exitProcess(-1) sustituya a finish() en el hilo principal
+            .create().show()
+        
     }
 
 }

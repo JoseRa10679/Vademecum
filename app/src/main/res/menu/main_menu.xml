@@ -3,42 +3,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.vademecum.ui.MainActivity">
-    
-    <item android:id="@+id/action_settings"
-        android:title="@string/acerca_de"
-        android:orderInCategory="2"
-        app:showAsAction="never">
-    </item>
-
-    <item android:id="@+id/version"
-        android:title="@string/versi_n"
-        android:orderInCategory="1"
-        app:showAsAction="never">
-    </item>
 
     <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="2"
+        android:title="@string/acerca_de"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/version"
+        android:orderInCategory="1"
+        android:title="@string/versi_n"
+        app:showAsAction="never" />
+
+    <item
+        android:icon="@drawable/ic_filter_list_black_24dp"
+        android:orderInCategory="1"
         android:title="@string/n_mero_de_p_activos"
-         android:visible="true"
-         app:showAsAction="ifRoom"
-         android:orderInCategory="1"
-         android:icon="@drawable/ic_filter_list_black_24dp">
-             <menu>
-                 <group android:checkableBehavior="single" android:visible="true">
-                     <item android:id="@+id/mnuTodosPA"
-                         android:checked="true"
-                         app:showAsAction="ifRoom"
-                         android:title="@string/todos" />
-                     <item android:id="@+id/mnuUnPA"
-                         app:showAsAction="ifRoom"
-                         android:title="@string/un_principio_activo" />
-                     <item android:id="@+id/mnuDosPA"
-                         app:showAsAction="ifRoom"
-                         android:title="@string/dos_principios_activos" />
-                     <item android:id="@+id/mnuMasDosPA"
-                         app:showAsAction="ifRoom"
-                         android:title="@string/tres_principios_activos" />
-                 </group>
-             </menu>
-     </item>
+        android:visible="true"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group
+                android:checkableBehavior="single"
+                android:visible="true">
+                <item
+                    android:id="@+id/mnuTodosPA"
+                    android:checked="true"
+                    android:title="@string/todos"
+                    app:showAsAction="ifRoom" />
+                <item
+                    android:id="@+id/mnuUnPA"
+                    android:title="@string/un_principio_activo"
+                    app:showAsAction="ifRoom" />
+                <item
+                    android:id="@+id/mnuDosPA"
+                    android:title="@string/dos_principios_activos"
+                    app:showAsAction="ifRoom" />
+                <item
+                    android:id="@+id/mnuMasDosPA"
+                    android:title="@string/tres_principios_activos"
+                    app:showAsAction="ifRoom" />
+            </group>
+
+
+
+        </menu>
+    </item>
 
 </menu>

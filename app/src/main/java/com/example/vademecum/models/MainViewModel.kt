@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vademecum.R
@@ -16,11 +17,32 @@ import com.example.vademecum.dataclass.MiObjeto
  */
 class MainViewModel : ViewModel() {
 
-    val miRecycle: MutableLiveData<MiObjeto>? by lazy { MutableLiveData<MiObjeto>() }
-    val miPosicion: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
-    val miMenu: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
+    private val _miRecycle: MutableLiveData<MiObjeto>? by lazy { MutableLiveData<MiObjeto>() }
+    fun getmiRecycle() = _miRecycle as LiveData<MiObjeto>
+    fun setmiRecycle(o: MiObjeto?){
+        _miRecycle?.value = o
+    }
 
-    val textoBHint: MutableLiveData<String> by lazy { MutableLiveData<String>()}
+    private val _miPosicion: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
+    fun getmiPosicion() = _miPosicion as LiveData<Int>
+    fun setmiPosicion(i: Int){
+        _miPosicion?.value = i
+    }
+
+
+    private val _miMenu: MutableLiveData<Int>? by lazy { MutableLiveData<Int>() }
+    fun getmiMenu() = _miMenu as LiveData<Int>
+    fun setmiMenu(i: Int){
+        _miMenu?.value = i
+    }
+
+
+    private val _textoBHint: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    fun getTextoBHint() = _textoBHint as LiveData<String>
+    fun setTextoBHint(s: String){
+        _textoBHint.value = s
+    }
+
 
 
     /**

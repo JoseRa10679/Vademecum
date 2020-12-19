@@ -37,8 +37,6 @@ interface ApiService {
     suspend fun getDetalleFarmaco(@Path(nreg) nregistro: String): Response<EsteFarmaco>
 
 
-
-
     //<editor-folder desc = " Get Medicamentos">
 
     /*

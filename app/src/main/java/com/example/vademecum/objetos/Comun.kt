@@ -8,8 +8,10 @@ import androidx.appcompat.app.AlertDialog
 import com.example.vademecum.R
 import com.example.vademecum.adaptadores.ApiService
 import com.example.vademecum.ui.MainActivity
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 /**
  * @author José Ramón Laperal
@@ -32,14 +34,15 @@ object Comun {
      */
     fun compruebaConexionInternet(activity: MainActivity) {
         if (!hasNetworkAvailable(activity)) {
-            val builder = AlertDialog.Builder(activity)
+
+            AlertDialog.Builder(activity)
                 .setTitle(R.string.sinConexion)
                 .setMessage(R.string.reintentar)
                 .setPositiveButton(R.string.strSi) { _, _ ->
-                    miComprobacion(0, activity)
+                    miComprobacion(0,activity)
                 }
                 .setNegativeButton(R.string.strNo) { _, _ -> activity.finish() }
-            builder.create().show()
+                .create().show()
         }
     }
 
@@ -87,9 +90,15 @@ object Comun {
 
     //<editor-folder desc = " Retrofit ">
 
+    private val miClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15,TimeUnit.SECONDS)
+
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(uRL)
         .addConverterFactory(GsonConverterFactory.create())
+        .client(miClient.build())
         .build()
 
     val service: ApiService = retrofit.create(ApiService::class.java)
@@ -103,21 +112,17 @@ object Comun {
             show()
         }
     }
-
-
-
-
+    
 
     //</editor-folder>
 
     /*
 
-    /**
+    *
      * Permite el cambio de características de texto dentro de un TextView
      *
      * https://gist.github.com/RadoYankov/29833fc1f5ecd577b0581d6de93ff60f
      *
-     */
     fun spannable(func: () -> SpannableString) = func()
     private fun span(s: CharSequence, o: Any) = (if (s is String) SpannableString(s) else s as? SpannableString
         ?: SpannableString("")).apply { setSpan(o, 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) }

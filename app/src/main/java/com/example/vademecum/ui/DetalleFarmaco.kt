@@ -40,41 +40,33 @@ class DetalleFarmaco : AppCompatActivity() {
 
     private val nRegistro: String by lazy { intent.getStringExtra(getString(R.string.regsitro)) }
 
-    //</editor-folder>
 
+    //</editor-folder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //val toolbar: Toolbar = findViewById(R.id.toolbarDetalle)
         setSupportActionBar(binding.toolbarDetalle)
 
-        getFarmacoById(Comun.service, nRegistro)
-
+        lifecycleScope.launch(Dispatchers.IO) {
+            getFarmacoById(Comun.service, nRegistro)
+        }
     }
 
-    /**
-     * Función que muestra las características del fármaco seleccionado
-     * @param ser instancia del ApiServide de Retrofit
-     * @param reg número de registro del fármco en cuestión
-     */
-    private fun getFarmacoById(ser: ApiService, reg: String) {
 
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getDetalleFarmaco(reg)
-            if(respuesta.isSuccessful){
-                val miMS: EsteFarmaco? = respuesta.body()
-                lifecycleScope.launch(Dispatchers.Main) {
-                    llenaFormulario(miMS, reg)
-                    delay(300L)
-                    llamaProgresion()
-                }
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
+    private suspend fun getFarmacoById(ser: ApiService, reg: String) {
+        val respuesta = ser.getDetalleFarmaco(reg)
+        if (respuesta.isSuccessful) {
+            val miMS: EsteFarmaco? = respuesta.body()
+            lifecycleScope.launch(Dispatchers.Main) {
+                llenaFormulario(miMS, reg)
+                delay(300L)
+                llamaProgresion()
             }
+        } else {
+            Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
         }
-
     }
 
     /**
@@ -122,9 +114,12 @@ class DetalleFarmaco : AppCompatActivity() {
      */
     @SuppressLint("SetTextI18n")
     private fun llenaFormulario(miM: EsteFarmaco?, reg: String) {
-        binding.txtNombre.text = miM?.nombre
-        binding.txtLaboratorio.text = miM?.labtitular
-        binding.txtCpresc.text = miM?.cpresc
+
+        binding.run{
+            txtNombre.text = miM?.nombre
+            txtLaboratorio.text = miM?.labtitular
+            txtCpresc.text = miM?.cpresc
+        }
 
         val miPa: List<PActivos>? = miM?.pactivos
         var miPAct = String()
@@ -134,12 +129,12 @@ class DetalleFarmaco : AppCompatActivity() {
         binding.txtPactivos.text = DOBLE_SALTO + miPAct
 
         val miPr: List<Presentacion>? = miM?.presentaciones
-        var miPresent =  String()
+        var miPresent = String()
         miPr?.forEach {
-            val miPsuministro =  getString(R.string.hay_problemas_de_suministro)
-            miPresent = if(it.psum) {
-                miPresent + it.nombre + SALTO +  miPsuministro + DOBLE_SALTO
-            }else{
+            val miPsuministro = getString(R.string.hay_problemas_de_suministro)
+            miPresent = if (it.psum) {
+                miPresent + it.nombre + SALTO + miPsuministro + DOBLE_SALTO
+            } else {
                 miPresent + it.nombre + DOBLE_SALTO
             }
 
@@ -155,148 +150,131 @@ class DetalleFarmaco : AppCompatActivity() {
 
         val misDocs: List<Docs>? = miM?.docs
 
-        if (!misDocs!!.isNullOrEmpty()) {
-            val fTecnica :String? = misDocs[0].urlHtml
-            val prospecto:String? = if (misDocs.size > 1) {misDocs[1].urlHtml} else {null}
+        if (misDocs!!.isNullOrEmpty()) {
+            colorNoAccesible()
+        }else{
 
-            with(binding.txtFichaT){
+            val fTecnica: String? = misDocs[0].urlHtml
+
+            if(fTecnica==null){
+                colorNoAccesible()
+            }
+            val prospecto: String? = if (misDocs.size > 1) {
+                misDocs[1].urlHtml
+            } else {
+                null
+            }
+
+            binding.txtFichaT.run{
                 text = getString(R.string.abrir_ficha_tecnica)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(it)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
                 }
             }
 
-            with(binding.txtFichaIndicaciones){
+            binding.txtFichaIndicaciones.run{
                 text = getString(R.string.indicaciones)
-                setOnClickListener{
-                    fTecnica?.let{
+                setOnClickListener {
+                    fTecnica?.let {
                         val posRuta =
                             "$RUTA$reg/4.1/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRuta)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
                 }
             }
 
-            with(binding.txtFichaTPos){
+            binding.txtFichaTPos.run{
                 text = getString(R.string.posolog_a)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         val posRuta =
                             "$RUTA$reg/4.2/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRuta)
                             startActivity(this)
                         }
-                    } ?: run {
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
                 }
             }
 
-            with(binding.txtFichaContra){
+            binding.txtFichaContra.run{
                 text = getString(R.string.contraindicaciones)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         val posRutaC =
                             "$RUTA$reg/4.3/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRutaC)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
+
                 }
             }
 
-            with(binding.txtFichaInterac){
+            binding.txtFichaInterac.run{
                 text = getString(R.string.interacciones)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         val posRutaC =
                             "$RUTA$reg/4.5/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRutaC)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
                 }
             }
 
-            with(binding.txtFichaFertilidad){
+            binding.txtFichaFertilidad.run{
                 text = getString(R.string.fertilidad)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         val posRutaC =
                             "$RUTA$reg/4.6/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRutaC)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
 
                 }
             }
 
-            with(binding.txtFichaReacciones){
+            binding.txtFichaReacciones.run{
                 text = getString(R.string.reacciones_adversas)
                 setOnClickListener {
-                    fTecnica?.let{
+                    fTecnica?.let {
                         val posRutaC =
                             "$RUTA$reg/4.8/$FICHA"
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(posRutaC)
                             startActivity(this)
                         }
-                    } ?: run{
-                        ftNoAccesible()
-                    }
+                    } ?: ftNoAccesible()
                 }
             }
 
-            with (binding.txtProxpecto){
+            binding.txtProxpecto.run{
                 text = getString(R.string.abrir_prospecto)
-                setOnClickListener{
-                    prospecto?.let{
+                setOnClickListener {
+                    prospecto?.let {
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse(it)
                             startActivity(this)
                         }
-                    } ?: run{
-                        proNoAccesible()
-                    }
+                    } ?: proNoAccesible()
 
                 }
             }
-
-        }else{
-
-            binding.txtFichaT.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaIndicaciones.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaTPos.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaContra.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaInterac.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaFertilidad.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtFichaReacciones.setTextColor(getColor(R.color.colorGrisTexto))
-            binding.txtProxpecto.setTextColor(getColor(R.color.colorGrisTexto))
-
-            ftNoAccesible()
         }
 
         binding.txtConduccion.text = if (miM.conduc) {
@@ -306,14 +284,28 @@ class DetalleFarmaco : AppCompatActivity() {
         }
 
         if (miM.psum) {
-            with(binding.txtPsum){
+            binding.txtPsum.apply{
                 text = getString(R.string.hay_problemas_suminstro)
                 setTextColor(getColor(R.color.colorPrimaryDark))
             }
         } else {
             binding.txtPsum.text = getString(R.string.no_problemas_suministro)
         }
+    }
 
+    private fun colorNoAccesible(){
+        val mColor = getColor(R.color.colorGrisTexto)
+        binding.run{
+            txtFichaT.setTextColor(mColor)
+            txtFichaIndicaciones.setTextColor(mColor)
+            txtFichaTPos.setTextColor(mColor)
+            txtFichaContra.setTextColor(mColor)
+            txtFichaInterac.setTextColor(mColor)
+            txtFichaFertilidad.setTextColor(mColor)
+            txtFichaReacciones.setTextColor(mColor)
+            txtProxpecto.setTextColor(mColor)
+        }
+        ftNoAccesible()
     }
 
 }

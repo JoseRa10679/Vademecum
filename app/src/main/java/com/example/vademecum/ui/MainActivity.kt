@@ -46,15 +46,16 @@ class MainActivity : AppCompatActivity(),
 
     //<editor-folder desc = " Variables ">
 
-    private val binding by lazy{
+    private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+
 
     private val miViewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
-    private var getNumPA: Int =0
+    private var getNumPA: Int = 0
 
 
     //</editor-folder>
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity(),
      *
      **/
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        when(getNumPA){
+        when (getNumPA) {
             0 -> menu?.findItem(R.id.mnuTodosPA)?.isChecked = true
             1 -> menu?.findItem(R.id.mnuUnPA)?.isChecked = true
             2 -> menu?.findItem(R.id.mnuDosPA)?.isChecked = true
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        when(item.itemId){
+        when (item.itemId) {
             R.id.version -> {
                 lateinit var version: String
                 var packageInfo: PackageInfo? = null
@@ -95,43 +96,45 @@ class MainActivity : AppCompatActivity(),
                 }
 
                 if (packageInfo != null) version = packageInfo.versionName
-                    Toast.makeText(
-                        this@MainActivity,
-                        "$nVADEMECUM$version$nMIFIRMA",
-                        Toast.LENGTH_SHORT
-                    ).apply {
-                        setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
-                        show()
-                    }
+                Toast.makeText(
+                    this@MainActivity,
+                    "$nVADEMECUM$version$nMIFIRMA",
+                    Toast.LENGTH_SHORT
+                ).apply {
+                    setGravity(Gravity.CENTER or Gravity.CENTER_HORIZONTAL, 0, 0)
+                    show()
+                }
 
             }
-            R.id.action_settings ->{
-                val intent = Intent(this, Acercade::class.java)
-                startActivity(intent)
+            R.id.action_settings -> {
+                Intent(this, Acercade::class.java).apply {
+                    startActivity(this)
+                }
+
             }
 
-            R.id.mnuTodosPA->{
+            R.id.mnuTodosPA -> {
                 item.isChecked = !item.isChecked
-                getNumPA =0
-                miViewModel.miMenu?.value = getNumPA
+                getNumPA = 0
+                miViewModel.setmiMenu(getNumPA)
                 return true
             }
-            R.id.mnuUnPA->{
+            R.id.mnuUnPA -> {
                 item.isChecked = !item.isChecked
-                getNumPA =1
-                miViewModel.miMenu?.value = getNumPA
+                getNumPA = 1
+                miViewModel.setmiMenu(getNumPA)
                 return true
             }
-            R.id.mnuDosPA->{
+            R.id.mnuDosPA -> {
                 item.isChecked = !item.isChecked
-                getNumPA =2
-                miViewModel.miMenu?.value = getNumPA
+                getNumPA = 2
+                miViewModel.setmiMenu(getNumPA)
                 return true
             }
-            R.id.mnuMasDosPA->{
+            R.id.mnuMasDosPA -> {
                 item.isChecked = !item.isChecked
-                getNumPA =3
-                miViewModel.miMenu?.value = getNumPA
+                getNumPA = 3
+                miViewModel.setmiMenu(getNumPA)
                 return true
             }
 
@@ -147,46 +150,25 @@ class MainActivity : AppCompatActivity(),
 
         setSupportActionBar(binding.toolbar)
 
-
         // Comprueba fecha límite
-        if(CFecha.comprueba("01/01/2022")){
+        if (CFecha.comprueba("01/01/2024")) {
             CFecha.alertaMSG(this)
         }
 
-
         Comun.compruebaConexionInternet(this)
 
-
-        miViewModel.miMenu?.observe(this,{
-            getNumPA = it?:0
-//            getNumPA = miViewModel.miMenu?.value?.toInt()?:0
-        })
-
-        miViewModel.textoBHint.observe(this, {
-            binding.txtBuscar.hint = it
-        })
-
-        miViewModel.miRecycle?.observe(this,{
-            val miObjeto: MiObjeto? = it
-            binding.txtBuscar.text?.toString()?.let{
-               getComun(miObjeto)
-           } ?: run{
-               getComun(null)
-           }
-        })
+        observa()
 
         inicializa()
 
 
         //      Se activa el botón cuando el número de letras es mayor a 2
         binding.txtBuscar.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) { }
+            override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.botonBuscar.isEnabled = binding.txtBuscar.text.length > 2
-
             }
-
         })
 
         //      Borra el contenido del EditTexBox y limpia el RecyclerView
@@ -194,37 +176,36 @@ class MainActivity : AppCompatActivity(),
             binding.txtBuscar.text.clear()
             this.invalidateOptionsMenu()
             getNumPA = 0
-            miViewModel.miMenu?.value = getNumPA
-            miViewModel.miRecycle?.value = null
+            miViewModel.setmiMenu(getNumPA)
+            miViewModel.setmiRecycle(null)
             getComun(null)
             UIUtil.showKeyboard(this, txtBuscar)
             true
         }
 
         //        Cambia el Hint del editTextBox al marcar el chkActivo
-        binding.chkPActivo.setOnClickListener{
-            miViewModel.textoBHint.value = if(binding.chkPActivo.isChecked){
-                getString(R.string.p_activo)
-            }else{
-                getString(R.string.nombre)
-            }
-
+        binding.chkPActivo.setOnClickListener {
+            miViewModel.setTextoBHint(
+                if (binding.chkPActivo.isChecked) {
+                    getString(R.string.p_activo)
+                } else {
+                    getString(R.string.nombre)
+                }
+            )
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
         binding.chkOrdenNombre.setOnClickListener {
             if (binding.chkOrdenNombre.isChecked) binding.chkOrdenLaboratorio.isChecked = false
-
         }
 
         //        Bloquea que se puedan activar a la vez el orden por nombre y laboratorio
         binding.chkOrdenLaboratorio.setOnClickListener {
             if (binding.chkOrdenLaboratorio.isChecked) binding.chkOrdenNombre.isChecked = false
-
         }
 
         //      Busca los fármacos en la API dependiendo de si está marcado el Principio activo o no.
-        botonBuscar.setOnClickListener {
+        binding.botonBuscar.setOnClickListener {
             if (Comun.hasNetworkAvailable(this)) {
 
                 /**
@@ -239,21 +220,20 @@ class MainActivity : AppCompatActivity(),
                  * Utilizo una Corutina en el hilo IO para hacer la consulta a la base de datos online
                  * y que, no bloquee el hilo principal
                  */
-
-                lifecycleScope.launch(Dispatchers.IO){
+                lifecycleScope.launch(Dispatchers.IO) {
                     val miS: String = binding.txtBuscar.text.toString()
                     if (binding.chkPActivo.isChecked) {
-                        when(getNumPA){
+                        when (getNumPA) {
                             0 -> getPactivos(Comun.service, miS)
                             1 -> getPactivosUnPA(Comun.service, miS)
-                            2-> getPactivosDosPA(Comun.service, miS)
+                            2 -> getPactivosDosPA(Comun.service, miS)
                             else -> getPactivosMasDeDosPA(Comun.service, miS)
                         }
                     } else {
-                        when(getNumPA){
+                        when (getNumPA) {
                             0 -> getMedicamentos(Comun.service, miS)
                             1 -> getMedicamentosUnPa(Comun.service, miS)
-                            2-> getMedicamentosDosPa(Comun.service, miS)
+                            2 -> getMedicamentosDosPa(Comun.service, miS)
                             else -> getMedicamentosMasDeDos(Comun.service, miS)
                         }
                     }
@@ -266,14 +246,39 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    private fun observa() {
+
+        miViewModel.run{
+            getmiMenu().observe(this@MainActivity, {
+                getNumPA = it ?: 0
+            })
+
+            getTextoBHint().observe(this@MainActivity, {
+                binding.txtBuscar.hint = it ?: "Nombre"
+            })
+
+            getmiRecycle().observe(this@MainActivity, {
+                val miObjeto: MiObjeto? = it
+                binding.txtBuscar.text?.toString()?.let {
+                    getComun(miObjeto)
+                } ?: getComun(null)
+
+            })
+
+            getmiPosicion().observe(this@MainActivity, {
+                binding.recyclerId.smoothScrollToPosition(it)
+            })
+        }
+
+    }
+
     /**
      * Actualiza la pantalla con el ViewModel al volver a cargar la actividad
      */
     override fun onResume() {
         super.onResume()
-
         binding.txtBuscar.requestFocus()
-        UIUtil.showKeyboard(this, binding.txtBuscar)
+//        UIUtil.showKeyboard(this, binding.txtBuscar)
     }
 
     //<editor-folder desc = " Consultas ">
@@ -285,31 +290,24 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getPactivos(ser: ApiService, miS: String){
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getPActivos(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+    private suspend fun getPactivos(ser: ApiService, miS: String) {
+        respondiendo(ser.getPActivos(miS))
     }
 
 
-   /* ********** SIN CORUTINAS ****************
-    private fun getPactivos(ser: ApiService, miS: String) {
-        //        Filtra solo los comercializados
-        ser.getPActivos(miS).enqueue(object : Callback<MiObjeto> {
-            override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
-                funcionListado(response)
-            }
+    /* ********** SIN CORUTINAS ****************
+     private fun getPactivos(ser: ApiService, miS: String) {
+         //        Filtra solo los comercializados
+         ser.getPActivos(miS).enqueue(object : Callback<MiObjeto> {
+             override fun onResponse(call: Call<MiObjeto>, response: Response<MiObjeto>) {
+                 funcionListado(response)
+             }
 
-            override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
-    }*/
+             override fun onFailure(call: Call<MiObjeto>, t: Throwable) {
+                 t.printStackTrace()
+             }
+         })
+     }*/
 
     /**
      * Función que filtra los fármcos por el Principio Activo
@@ -318,17 +316,9 @@ class MainActivity : AppCompatActivity(),
      * @param ser instancia del ApiServide de Retrofit
      */
 
-    private fun getPactivosUnPA(ser: ApiService, miS: String){
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getPactivosUnPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+    private suspend fun getPactivosUnPA(ser: ApiService, miS: String) {
+        respondiendo(ser.getPactivosUnPA(miS))
     }
-
 
 
     /**
@@ -337,18 +327,10 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getPactivosDosPA(ser: ApiService, miS: String) {
+    private suspend fun getPactivosDosPA(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
-        lifecycleScope.launch(Dispatchers.IO) {
-            val respuesta = ser.getPactivosDosPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+        respondiendo(ser.getPactivosDosPA(miS))
     }
-
 
 
     /**
@@ -357,18 +339,10 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getPactivosMasDeDosPA(ser: ApiService, miS: String) {
+    private suspend fun getPactivosMasDeDosPA(ser: ApiService, miS: String) {
         //        Filtra solo los comercializados
-        lifecycleScope.launch(Dispatchers.IO) {
-            val respuesta = ser.getPactivosTresPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+        respondiendo(ser.getPactivosTresPA(miS))
     }
-
 
 
     //</editor-folder>
@@ -380,17 +354,9 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getMedicamentos(ser: ApiService, miS: String) {
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getMedicamentos(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+    private suspend fun getMedicamentos(ser: ApiService, miS: String) {
+        respondiendo(ser.getMedicamentos(miS))
     }
-
 
 
     /**
@@ -400,17 +366,9 @@ class MainActivity : AppCompatActivity(),
      * @param ser instancia del ApiServide de Retrofit
      *
      */
-    private fun getMedicamentosUnPa(ser: ApiService, miS: String) {
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getMedicamentosUnPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
+    private suspend fun getMedicamentosUnPa(ser: ApiService, miS: String) {
+        respondiendo(ser.getMedicamentosUnPA(miS))
     }
-
 
 
     /**
@@ -420,16 +378,8 @@ class MainActivity : AppCompatActivity(),
      * @param ser instancia del ApiServide de Retrofit
      *
      */
-    private fun getMedicamentosDosPa(ser: ApiService, miS: String) {
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getMedicamentosDosPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-
-        }
+    private suspend fun getMedicamentosDosPa(ser: ApiService, miS: String) {
+        respondiendo(ser.getMedicamentosDosPA(miS))
     }
 
 
@@ -439,20 +389,23 @@ class MainActivity : AppCompatActivity(),
      * @author José Ramón Laperal Mur
      * @param ser instancia del ApiServide de Retrofit
      */
-    private fun getMedicamentosMasDeDos(ser: ApiService, miS: String) {
-        lifecycleScope.launch(Dispatchers.IO){
-            val respuesta = ser.getMedicamentosTresPA(miS)
-            if (respuesta.isSuccessful){
-                funcionListado(respuesta)
-            }else{
-                Comun.noSePuedenCargarDatos(applicationContext, getString(R.string.no_cargar_datos))
-            }
-        }
-
+    private suspend fun getMedicamentosMasDeDos(ser: ApiService, miS: String) {
+        respondiendo(ser.getMedicamentosTresPA(miS))
     }
 
 
     //</editor-folder>
+
+    private fun respondiendo(res: Response<MiObjeto>){
+        if (res.isSuccessful) {
+            funcionListado(res)
+        } else {
+            Comun.noSePuedenCargarDatos(
+                applicationContext,
+                getString(R.string.no_cargar_datos)
+            )
+        }
+    }
 
     /**
      * Llena el RecyclerView con los fármacos filtrados
@@ -473,18 +426,16 @@ class MainActivity : AppCompatActivity(),
             else -> miLista?.toMutableList()
         }
 
-        val layoutManager = LinearLayoutManager(this@MainActivity).also {
-            it.orientation = LinearLayoutManager.VERTICAL
+        val layoutManager = LinearLayoutManager(this@MainActivity).apply {
+            orientation = LinearLayoutManager.VERTICAL
         }
 
-        binding.recyclerId.run{
+        binding.recyclerId.run {
             this.layoutManager = layoutManager
             val adapter = sortList?.let {
                 Adaptador(this@MainActivity, it, this@MainActivity)
             }
-
             this.adapter = adapter
-            smoothScrollToPosition(miViewModel.miPosicion?.value?:0)
         }
 
         UIUtil.hideKeyboard(this@MainActivity)
@@ -499,16 +450,16 @@ class MainActivity : AppCompatActivity(),
      * @param position representa la posición en el RecyclerView
      */
     override fun onItemClick(item: MiFarmaco, position: Int) {
-        if(Comun.hasNetworkAvailable(this)){
-            miViewModel.miPosicion?.value = position
+        if (Comun.hasNetworkAvailable(this)) {
+            miViewModel.setmiPosicion(position)
 
-            lifecycleScope.launch(Dispatchers.Main){
-                Intent(this@MainActivity, DetalleFarmaco::class.java).apply{
+            lifecycleScope.launch(Dispatchers.Main) {
+                Intent(this@MainActivity, DetalleFarmaco::class.java).apply {
                     putExtra("REGISTRO", item.nregistro)
                     startActivity(this)
                 }
             }
-        }else{
+        } else {
             errorSinConexion()
         }
     }
@@ -517,45 +468,41 @@ class MainActivity : AppCompatActivity(),
      * Inicializa los controles
      */
     private fun inicializa() {
-        binding.txtBuscar.requestFocus()
+        binding.txtBuscar.run{
+            requestFocus()
 
-//      Convierte todas las entradas en mayúsculas
-        binding.txtBuscar.filters += InputFilter.AllCaps()
-
+            //      Convierte todas las entradas en mayúsculas
+            filters += InputFilter.AllCaps()
+        }
+        
         this.invalidateOptionsMenu()
-        getNumPA =0
+        getNumPA = 0
 
     }
-
 
     /**
      * Ejecuta el código según la respuesta de Retofit
      * @param res Respuesta de Retrofit
      */
     private fun funcionListado(res: Response<MiObjeto>) {
-
-        lifecycleScope.launch (Dispatchers.Main){
-
+        lifecycleScope.launch(Dispatchers.Main) {
             delay(1000L)
             if (res.isSuccessful) {
-                with(miViewModel){
-                    miRecycle?.value = res.body()
-                    miMenu?.value = getNumPA
-                    val miValor: MiObjeto? = miRecycle?.value
+                miViewModel.run{
+                    setmiRecycle(res.body())
+                    setmiMenu(getNumPA)
+                    val miValor: MiObjeto? = getmiRecycle().value
                     getComun(miValor)
 
-                    lifecycleScope.launch(Dispatchers.Main){
+                    lifecycleScope.launch(Dispatchers.Main) {
                         contador(miValor, applicationContext)
                         progressBar0.visibility = View.GONE
                     }
-                    
                 }
             } else {
                 errorToastListado()
             }
-
         }
-
     }
 
     //    Toast que avisa del error en la ejecución de la consulta.
@@ -564,7 +511,7 @@ class MainActivity : AppCompatActivity(),
             applicationContext,
             "No se ha podido el listado de fármacoslos datos",
             Toast.LENGTH_LONG
-        ).apply{
+        ).apply {
             setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
             show()
         }
@@ -577,17 +524,11 @@ class MainActivity : AppCompatActivity(),
             applicationContext,
             "No hay conexión a Internet",
             Toast.LENGTH_LONG
-        ).apply{
+        ).apply {
             setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 0)
-            val toastView: View = view
-            toastView.setBackgroundColor(
-                ContextCompat.getColor(
-                    toastView.context,
-                    R.color.colorAccent
-                )
-            )
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.colorAccent))
             show()
         }
-
+        
     }
 }

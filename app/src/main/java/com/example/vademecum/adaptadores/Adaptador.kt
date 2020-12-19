@@ -7,8 +7,8 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vademecum.R
+import com.example.vademecum.databinding.ItemBinding
 import com.example.vademecum.dataclass.MiFarmaco
-import kotlinx.android.synthetic.main.item.view.*
 import kotlin.math.max
 
 /**
@@ -39,10 +39,11 @@ class Adaptador(
     }
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun setData(f: MiFarmaco?, action: OnFarItemClickListner) {
-            with(itemView){
-                itemFarmaco.text = f!!.nombre
-                itemLaboratorio.text = f.labtitular
+        private val binding = ItemBinding.bind(itemView)
+        fun setData(f: MiFarmaco, action: OnFarItemClickListner) {
+            with(itemView) {
+                binding.itemFarmaco.text = f.nombre
+                binding.itemLaboratorio.text = f.labtitular
 
                 setOnClickListener {
                     action.onItemClick(f, absoluteAdapterPosition)
